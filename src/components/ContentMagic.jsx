@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
-const INIT_MAGIC = [
+const INIT_MAGIC = [];
+const panel_magic = [
     { Num: '000', Date: '01/01/1001', Me: '' },
     { Num: '001', Date: '01/01/1001', Me: '' },
     { Num: '002', Date: '01/01/1001', Me: '' },

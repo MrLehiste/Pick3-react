@@ -5,7 +5,9 @@ import StateSelect from './components/StateSelect.jsx';
 import Tabs from './components/Tabs.jsx';
 import ContentMagic from './components/ContentMagic.jsx';
 import ContentTablet from './components/ContentTablet.jsx';
+import ContentPanel from './components/ContentPanel.jsx';
 import ContentScramble from './components/ContentScramble.jsx';
+import ContentPicks from './components/ContentPicks.jsx';
 
 export default function App() {
   const [state, setState] = useState('fl');
@@ -24,7 +26,9 @@ export default function App() {
         <Tabs onTabChange={handleTabChange} />
         { tab==='Magic' && <ContentMagic state={state} num={num} /> }
         { tab==='Tablet' && <ContentTablet state={state} num={num} /> }
+        { tab==='Panels' && <ContentPanel state={state} num={num} /> }
         { tab==='Scramble' && <ContentScramble state={state} num={num} /> }
+        { tab==='Picks' && <ContentPicks state={state} num={num} /> }
       </main>
     </>
   );
