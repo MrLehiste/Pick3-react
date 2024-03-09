@@ -4,6 +4,7 @@ const INIT_TABLET = []
   
   export default function ContentTablet({state, num}) {
     const [magicData, setMagicData] = useState(INIT_TABLET);
+    const [historyData, setHistoryData] = useState(INIT_TABLET);
     const [retryCount, setRetryCount] = useState(0);
 
     useEffect(() => {
@@ -16,6 +17,26 @@ const INIT_TABLET = []
           .then(data => { 
             //console.log(data); 
             setMagicData(data); 
+          })
+          .catch(error => {
+            console.error('There was a problem fetching the data:', error);
+            if(retryCount <= 2) {
+              setTimeout(() => {
+                setRetryCount(retryCount + 1);
+              }, 2000);
+            }
+            else { window.location.reload(); }
+          });
+
+        const historyUrl = 'https://pick3-function-api.azurewebsites.net/api/Tablet?h=1&state='+state+'&num='+num+'&code=qI7zCr8IIxaYSP1MQPuYzgkaobbTE/yLErVUx8lD6jy2BHV2hpllqw==';
+        fetch(historyUrl)
+          .then(response => {
+            if (!response.ok) { throw new Error('Network response was not ok.'); }
+            return response.json();
+          })
+          .then(data => { 
+            //console.log(data); 
+            setHistoryData(data); 
           })
           .catch(error => {
             console.error('There was a problem fetching the data:', error);
@@ -76,6 +97,34 @@ const INIT_TABLET = []
                         <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{new Date(magic.Date).toLocaleDateString('en-US', dateOptions)}</td>
                         <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{magic.Me}</td>
                         {magic.Me === "M" && <><td /><td /><td /></> }
+                      </tr>
+                    ))}
+                  </tbody>
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th colSpan={2} scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                        
+                      </th>
+                      <th scope="col" className="py-3.5 text-left text-sm font-semibold text-gray-900">
+                        Num
+                      </th>
+                      <th colSpan={2} scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        Date
+                      </th>
+                      <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 bg-white">
+                    {historyData.map((magic) => (
+                      <tr key={magic.Num + magic.Date}>
+                        <td colSpan={2}></td>
+                        <td className='whitespace-nowrap py-1 pr-3 text-sm font-medium text-gray-900'>
+                          {magic.Num}
+                        </td>
+                        <td colSpan={2} className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{new Date(magic.Date).toLocaleDateString('en-US', dateOptions)}</td>
+                        <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500"></td>
                       </tr>
                     ))}
                   </tbody>
