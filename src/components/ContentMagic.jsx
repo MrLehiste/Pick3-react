@@ -1,20 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 const INIT_MAGIC = [];
-const panel_magic = [
-    { Num: '000', Date: '01/01/1001', Me: '' },
-    { Num: '001', Date: '01/01/1001', Me: '' },
-    { Num: '002', Date: '01/01/1001', Me: '' },
-    { Num: '003', Date: '01/01/1001', Me: '' },
-    { Num: '004', Date: '01/01/1001', Me: '' },
-    { Num: '005', Date: '01/01/1001', Me: '' },
-    { Num: '006', Date: '01/01/1001', Me: '' },
-    { Num: '007', Date: '01/01/1001', Me: '' },
-    { Num: '008', Date: '01/01/1001', Me: '' },
-    { Num: '009', Date: '01/01/1001', Me: '' },
-  ]
   
-  export default function ContentMagic({state, num}) {
+  export default function ContentMagic({state, num, onNumberClick}) {
     const [magicData, setMagicData] = useState(INIT_MAGIC);
     const [retryCount, setRetryCount] = useState(0);
 
@@ -40,6 +28,11 @@ const panel_magic = [
           });
       }, [state, num]); 
 
+    const handleNumberClick = (num) => {
+      //console.log('Number CLICK', num);
+      onNumberClick(num);
+    };
+
     const dateOptions = { month: 'numeric', day: 'numeric', year: 'numeric' };
 
     return (
@@ -58,7 +51,7 @@ const panel_magic = [
                         Date
                       </th>
                       <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                        M/P
+                        
                       </th>
                     </tr>
                   </thead>
@@ -66,7 +59,7 @@ const panel_magic = [
                     {magicData.map((magic) => (
                       <tr key={magic.Num}>
                         <td className="whitespace-nowrap py-1 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                          {magic.Num}
+                          <button onClick={() => handleNumberClick(magic.Num)}>{magic.Num}</button>
                         </td>
                         <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{new Date(magic.Date).toLocaleDateString('en-US', dateOptions)}</td>
                         <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{magic.Me}</td>
