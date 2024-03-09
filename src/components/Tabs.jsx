@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 const TAB_LIST = [
     { name: 'Magic', href: '#', current: false },
@@ -12,14 +12,11 @@ const TAB_LIST = [
     return classes.filter(Boolean).join(' ')
   }
   
-  export default function Tabs({ onTabChange }) {
-    const [selectedTab, setSelectedTab] = useState('Magic');
+  export default function Tabs({ onTabChange, selectedTab }) {
     const handleTabChange = (event) => {
-        setSelectedTab(event.target.value);
         onTabChange(event.target.value);
     };
     const handleTabClick = (event) => {
-        setSelectedTab(event.target.textContent);
         onTabChange(event.target.textContent);
         event.preventDefault();
     };
