@@ -64,7 +64,7 @@ const INIT_TABLET = []
                   <thead className="bg-gray-50">
                     <tr>
                       <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                        Num
+                        Num ({magicData.filter(magic => magic.Me === "M").length})
                       </th>
                       <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                         Date
@@ -73,7 +73,7 @@ const INIT_TABLET = []
                         Mid
                       </th>
                       <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                        Num
+                        Num ({magicData.filter(magic => magic.Me === "E").length})
                       </th>
                       <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                         Date
@@ -106,7 +106,7 @@ const INIT_TABLET = []
                         
                       </th>
                       <th scope="col" className="py-3.5 text-left text-sm font-semibold text-gray-900">
-                        Num
+                        Num ({historyData.length})
                       </th>
                       <th colSpan={2} scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                         Date
