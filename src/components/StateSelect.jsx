@@ -46,6 +46,7 @@ export default function StateSelect({onStateChange}) {
     useEffect(() => {
       const lastDrawsUrl = 'https://pick3-function-api.azurewebsites.net/api/Function1?code=QkFG8WBGJqanfaa0mB6hVpn/03XoLd5Klbqq4X5deWJaNUgHulGHiA=='
         + '&state=' + selectedState;
+      console.log('Loading...', lastDrawsUrl);
       fetch(lastDrawsUrl)
         .then(response => {
           if (!response.ok) { throw new Error('Network response was not ok.'); }
@@ -54,13 +55,14 @@ export default function StateSelect({onStateChange}) {
         .then(data => { 
           //console.log(data); 
           setLastDraws(data); 
+          onStateChange(selectedState);
         })
         .catch(error => {
           console.error('There was a problem fetching the data:', error);
-          if(retryCount <= 2) {
+          if(retryCount <= 3) {
             setTimeout(() => {
               setRetryCount(retryCount + 1);
-            }, 2000);
+            }, 5000);
           }
           else { window.location.reload(); }
         });

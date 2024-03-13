@@ -1,9 +1,10 @@
 import React from 'react';
 
 const TAB_LIST = [
+    { name: 'X', href: '#', current: false },
     { name: 'Magic', href: '#', current: false },
     { name: 'Tablet', href: '#', current: false },
-    { name: 'Panels', href: '#', current: true },
+    { name: 'Panel', href: '#', current: true },
     { name: 'Scramble', href: '#', current: false },
     { name: 'Picks', href: '#', current: false },
   ]
