@@ -3,7 +3,7 @@ import './StateSelect.css';
 import SvgMid from './SvgMid.jsx';
 import SvgEve from './SvgEve.jsx';
 
-export default function StateSelect({onStateChange}) {
+export default function StateSelect({ onStateChange, onDataLoaded, onDataUpdated }) {
     const [selectedState, setSelectedState] = useState('fl');
     const handleStateChange = (event) => {
       setSelectedState(event.target.value);
@@ -18,6 +18,7 @@ export default function StateSelect({onStateChange}) {
         .then(data => {
           console.log(data);
           setUpdatingDraws(false); // Set loading back to false once request is complete
+          onDataUpdated();
         })
         .catch(error => {
           // Handle errors
@@ -55,7 +56,7 @@ export default function StateSelect({onStateChange}) {
         .then(data => { 
           //console.log(data); 
           setLastDraws(data); 
-          onStateChange(selectedState);
+          onDataLoaded();
         })
         .catch(error => {
           console.error('There was a problem fetching the data:', error);
