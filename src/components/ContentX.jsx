@@ -30,6 +30,27 @@ export default function ContentX({state, num}) {
     setYears(y);
   }, []);
 
+  function findLowestDate(dateField, array) {
+    const validDates = array.filter(item => item[dateField]);
+    if (validDates.length === 0) return null;
+    let lowestDateRow = validDates[0]; //new Date(validDates[0][dateField]);
+    for (let i = 1; i < validDates.length; i++) {
+      const currentDate = new Date(validDates[i][dateField]);
+      if (!isNaN(currentDate.getTime()) && currentDate < new Date(lowestDateRow[dateField])) {
+        lowestDateRow = validDates[i];
+      }
+    }
+    return lowestDateRow;
+  }
+  function removeDuplicates(fields, arr) {
+    const uniqueMap = new Map();
+    arr.forEach(obj => {
+        const key = fields.map(field => obj[field]).join('|');
+        uniqueMap.set(key, obj);
+    });
+    return Array.from(uniqueMap.values());
+  }
+
   const panelUrl = 'https://pick3-function-api.azurewebsites.net/api/Panel?month=0&state='+state+'&num='+num+'&code=jObvEG0duLEYTPf4ig4D0q6CiCicMZZJeDHbnamUnKsSTVGuj2FVLw=='; 
   const { data, isPending, isError, error } = useQuery({
     queryKey: [state, num, 'panel', 0],
@@ -55,6 +76,8 @@ export default function ContentX({state, num}) {
         {HEADER_MONTHS.map((month) => (
         <th key={month.name} scope="col" className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
           {month.name}
+          {/* <br />Low: {JSON.stringify(findLowestDate('Dt2',data.filter(x => new Date(x.Dt).getMonth()==month.number-1)))} */}
+          {/* {JSON.stringify(data.filter(x => new Date(x.Dt).getMonth()==month.number-1))} */}
         </th>
         ))}
       </tr>
@@ -62,23 +85,36 @@ export default function ContentX({state, num}) {
     <tbody>
       {years.map((year, index) => (
         <tr key={'yr-'+year}>
-          <td className='sticky left-0 z-11 border-b border-gray-200 bg-white whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8'>
+          <td className='sticky left-0 z-11 border-b border-gray-200 bg-white whitespace-nowrap py-1 pl-3 pr-3 text-sm font-medium text-gray-900 sm:pl-3 lg:pl-3'>
             {year}
           </td>
-          {HEADER_MONTHS.map((month) => (
-          <td key={'td-'+month.name+'-'+year} className='border-b border-gray-200 bg-white whitespace-nowrap py-2 pl-2 pr-1 text-xs font-normal text-gray-900 sm:pl-3 lg:pl-4'>
-            {data.filter(
-              x => new Date(x.Dt).getFullYear()==year && new Date(x.Dt).getMonth()==month.number-1
-            ).map(
-              (x, i) => {return( <span key={'span-'+month.name+'-'+year+'-'+i}>
-                {i !==0 && <br />}
-                <strong>{x.Num}</strong>&nbsp;
-                {x.Q}&nbsp;
-                {new Date(x.Dt).toLocaleDateString('en-US', dateOptions)}
-              </span> )}
-            )}
-          </td>
-          ))}
+          {HEADER_MONTHS.map((month) => {
+            let closeRow = findLowestDate('Dt2',data.filter(x => new Date(x.Dt).getMonth()==month.number-1));
+            let bgColor = 'bg-white';
+            if(closeRow && year >= new Date(closeRow['Dt']).getFullYear() && year <= new Date(closeRow['Dt2']).getFullYear()){
+              switch(closeRow['Q']){
+                case "BOT": bgColor = 'bg-pink-400'; break;
+                case "GRN": bgColor = 'bg-green-300'; break;
+                case "BRN": bgColor = 'bg-amber-600'; break;
+                case "FRG": bgColor = 'bg-red-400'; break;
+                case "DBL": bgColor = 'bg-blue-400'; break;
+                default: bgColor = 'bg-fuchsia-400'; //Q
+              }
+            }
+            return(
+            <td key={'td-'+month.name+'-'+year} className={classNames(bgColor, 'border-b border-gray-200 whitespace-nowrap py-1 pl-1 pr-1 text-xs font-normal text-gray-900 sm:pl-1 lg:pl-1')}>
+              {removeDuplicates(['Num','Dt','Q'], data.filter(
+                x => new Date(x.Dt).getFullYear()==year && new Date(x.Dt).getMonth()==month.number-1
+              )).map(
+                (x, i) => {return( <span key={'span-'+month.name+'-'+year+'-'+i}>
+                  {i !==0 && <br />}
+                  <strong>{x.Num}</strong>&nbsp;
+                  {x.Q}&nbsp;
+                  {new Date(x.Dt).toLocaleDateString('en-US', dateOptions)}
+                </span> )}
+              )}
+            </td>
+          )})}
         </tr>
       ))}
     </tbody>
