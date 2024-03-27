@@ -20,13 +20,16 @@ const HEADER_MONTHS = [
   { name: 'December', number: 12 }
 ];
 
-export default function ContentX({state, num}) {
-  const dateOptions = { month: 'numeric', day: 'numeric' }; //, year: 'numeric'
+export default function ContentX({state, num, onMonthClick}) {
+  const dateOptions = { month: 'numeric', day: 'numeric' };
+  const dateOptions2 = { month: 'numeric', day: 'numeric', year: '2-digit' };
   function classNames(...classes) { return classes.filter(Boolean).join(' '); }
   const [years, setYears] = useState(INIT_YEARS);
   useEffect(()=>{
     let y = [];
-    for (let year = new Date().getFullYear(); year >= 1988; year--) { y.push(year); }
+    let startYear = 1988; //Florida
+    if(state=="ar") startYear = 2009;
+    for (let year = new Date().getFullYear(); year >= startYear; year--) { y.push(year); }
     setYears(y);
   }, []);
 
@@ -66,6 +69,7 @@ export default function ContentX({state, num}) {
       <ErrorBlock title="An error occurred" message={error.info?.message || 'Failed to fetch magic data.'} />
     );
   }
+  const handleMonthClick = (mo) => { onMonthClick(mo); };
   if (data) {
     content = (<table className="min-w-full border-separate border-spacing-0">
     <thead>
@@ -73,13 +77,20 @@ export default function ContentX({state, num}) {
         <th scope="col" className="sticky top-0 left-0 z-9 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8">
           Year
         </th>
-        {HEADER_MONTHS.map((month) => (
-        <th key={month.name} scope="col" className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
-          {month.name}
-          {/* <br />Low: {JSON.stringify(findLowestDate('Dt2',data.filter(x => new Date(x.Dt).getMonth()==month.number-1)))} */}
-          {/* {JSON.stringify(data.filter(x => new Date(x.Dt).getMonth()==month.number-1))} */}
+        {HEADER_MONTHS.map((month) => {
+        let closeRow = findLowestDate('Dt2',data.filter(x => new Date(x.Dt).getMonth()==month.number-1));
+        const monthData = closeRow ? (<span className='font-normal text-xs'>
+          {new Date(closeRow.Dt2).toLocaleDateString('en-US', dateOptions2) }
+          <br />{closeRow.Num2} {closeRow.Me2}
+          <br />{closeRow.R2} BALL
+          </span>)
+          : "OPEN";
+        return(
+        <th onClick={() => handleMonthClick(month.number)} key={month.name} scope="col" className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
+          {month.name}<br />
+          {monthData} 
         </th>
-        ))}
+        )})}
       </tr>
     </thead>
     <tbody>

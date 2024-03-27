@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import './StateSelect.css';
 import SvgMid from './SvgMid.jsx';
 import SvgEve from './SvgEve.jsx';
+import LoadingIndicator from './UI/LoadingIndicator.jsx';
 
 export default function StateSelect({ onStateChange, onDataLoaded, onDataUpdated }) {
     const [selectedState, setSelectedState] = useState('fl');
     const handleStateChange = (event) => {
       setSelectedState(event.target.value);
       onStateChange(event.target.value);
+      setDataLoaded(false);
     };
     const [updatingDraws, setUpdatingDraws] = useState(false);
     const handleUpdateDraws = () => {
@@ -42,6 +44,7 @@ export default function StateSelect({ onStateChange, onDataLoaded, onDataUpdated
           "St": ""
       }
   ]
+    const [dataLoaded, setDataLoaded] = useState(false);
     const [lastDraws, setLastDraws] = useState(EMPTY_DRAW);
     const [retryCount, setRetryCount] = useState(0);
     useEffect(() => {
@@ -56,6 +59,7 @@ export default function StateSelect({ onStateChange, onDataLoaded, onDataUpdated
         .then(data => { 
           //console.log(data); 
           setLastDraws(data); 
+          setDataLoaded(true);
           onDataLoaded();
         })
         .catch(error => {
@@ -70,7 +74,9 @@ export default function StateSelect({ onStateChange, onDataLoaded, onDataUpdated
     }, [selectedState, updatingDraws, retryCount]); 
 
     const dateOptions = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
-    const displayDraws = lastDraws.map((item, index) => (
+    const displayDraws = !dataLoaded //lastDraws.every(element => EMPTY_DRAW.includes(element))
+      ? <LoadingIndicator /> :
+    lastDraws.map((item, index) => (
       <div className="mb-1" key={index}>
           <span className="text-stone-800 font-semibold">
           { item['Me']==='M' && <SvgMid /> }
@@ -88,7 +94,7 @@ export default function StateSelect({ onStateChange, onDataLoaded, onDataUpdated
       <div className="flex flex-col items-center mb-2">
         <div>
           <select className="px-2 py-1 mb-2 mr-2" value={selectedState} onChange={handleStateChange}>
-              <option value="ca">California</option>
+              <option value="ar">Arkansas</option>
               <option value="fl">Florida</option>
           </select>
           <button onClick={handleUpdateDraws} disabled={updatingDraws} className="px-2 py-1 font-semibold uppercase rounded text-stone-900 bg-amber-100 hover:bg-amber-500">

@@ -4,25 +4,25 @@ import { fetchData } from '../util/http.js';
 import LoadingIndicator from './UI/LoadingIndicator.jsx';
 import ErrorBlock from './UI/ErrorBlock.jsx';
 
-export default function ContentPanel({state, num}) {
+export default function ContentPanel({state, num, panelMonth, onMonthChange}) {
   const getNumberOfDaysInMonth = (month) => {
     if (month < 1 || month > 12) { return 'Invalid month number'; }
     const year = new Date().getFullYear(); // Get the current year
     const lastDayOfMonth = new Date(year, month, 0).getDate();
     return lastDayOfMonth;
   };
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
-  const [days, setDays] = useState(Array.from({ length: getNumberOfDaysInMonth(new Date().getMonth() + 1) }, (_, index) => index + 1));
+  
+  const [days, setDays] = useState(Array.from({ length: getNumberOfDaysInMonth(panelMonth) }, (_, index) => index + 1));
 
   const dateOptions = { month: 'numeric', day: 'numeric', year: 'numeric' };
   const handleMonthChange = (event) => {
-    setCurrentMonth(event.target.value);
+    onMonthChange(event.target.value);
     setDays(Array.from({ length: getNumberOfDaysInMonth(event.target.value) }, (_, index) => index + 1));
   };
 
-  const panelUrl = 'https://pick3-function-api.azurewebsites.net/api/Panel?state='+state+'&num='+num+'&month='+currentMonth+'&code=jObvEG0duLEYTPf4ig4D0q6CiCicMZZJeDHbnamUnKsSTVGuj2FVLw==';
+  const panelUrl = 'https://pick3-function-api.azurewebsites.net/api/Panel?state='+state+'&num='+num+'&month='+panelMonth+'&code=jObvEG0duLEYTPf4ig4D0q6CiCicMZZJeDHbnamUnKsSTVGuj2FVLw==';
   const { data: panelData, isPending, isError, error } = useQuery({
-    queryKey: [state, num, 'panel', currentMonth],
+    queryKey: [state, num, 'panel', panelMonth],
     queryFn: ({ signal, queryKey }) => fetchData({ signal, url: panelUrl }),
     staleTime: 1000 * 60 * 60 * 12, //12 hours 
     cacheTime: 1000 * 60 * 60 * 12, //12 hours 
@@ -40,7 +40,7 @@ export default function ContentPanel({state, num}) {
     <thead className="bg-gray-50">
       <tr>
         <th colSpan="6" scope="col" className="px-3 py-3.5 text-center text-sm font-semibold text-gray-900">
-          <select value={currentMonth} onChange={handleMonthChange}>
+          <select value={panelMonth} onChange={handleMonthChange}>
             <option value="1">January</option>
             <option value="2">Febrary</option>
             <option value="3">March</option>

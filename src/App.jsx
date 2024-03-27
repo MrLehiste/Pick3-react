@@ -31,6 +31,9 @@ export default function App() {
   const [tab, setTab] = useState();
   const handleTabChange = (value) => { setTab(value); console.log('Tab changed', value); };
 
+  const [panelMonth, setPanelMonth] = useState(new Date().getMonth() + 1);
+  const handlePanelMonthChange = (value) => { setPanelMonth(value); console.log('Month changed', value); };
+  const handleMonthClick = (value) => { setPanelMonth(value); setTab('Panel'); console.log('Month clicked', value); };
   return (
     <>
       <Header />
@@ -39,10 +42,10 @@ export default function App() {
         <main className="flex flex-col items-center">
           <MagicNumberBox onNumberChange={handleNumChange} num={num} />
           <Tabs onTabChange={handleTabChange} selectedTab={tab} />
-          { tab==='X' && <ContentX state={state} num={num} /> }
+          { tab==='X' && <ContentX state={state} num={num} onMonthClick={handleMonthClick} /> }
           { tab==='Magic' && <ContentMagic onNumberClick={handleNumClick} state={state} num={num} /> }
           { tab==='Tablet' && <ContentTablet state={state} num={num} /> }
-          { tab==='Panel' && <ContentPanel state={state} num={num} /> }
+          { tab==='Panel' && <ContentPanel state={state} num={num} panelMonth={panelMonth} onMonthChange={handlePanelMonthChange} /> }
           { tab==='Scramble' && <ContentScramble state={state} num={num} /> }
           { tab==='Picks' && <ContentPicks state={state} num={num} /> }
         </main>

@@ -82,7 +82,7 @@ export default function ContentTablet({state, num}) {
       <ErrorBlock title="An error occurred" message={historyError.info?.message || 'Failed to fetch history data.'} />
     );
   }
-  if (historyData) {
+  if (historyData && historyData.length > 0) {
     historyContent = (<table className="min-w-full divide-y divide-gray-300"><thead className="bg-gray-50">
     <tr>
       <th colSpan={2} scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
