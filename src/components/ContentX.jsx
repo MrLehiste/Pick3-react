@@ -70,6 +70,7 @@ export default function ContentX({state, num, onMonthClick}) {
     );
   }
   const handleMonthClick = (mo) => { onMonthClick(mo); };
+  const bgColors = ['bg-pink-300','bg-green-400','bg-amber-600','bg-red-500','bg-blue-700','bg-yellow-300'];
   if (data) {
     content = (<table className="min-w-full border-separate border-spacing-0">
     <thead>
@@ -79,14 +80,33 @@ export default function ContentX({state, num, onMonthClick}) {
         </th>
         {HEADER_MONTHS.map((month) => {
         let closeRow = findLowestDate('Dt2',data.filter(x => new Date(x.Dt).getMonth()==month.number-1));
-        const monthData = closeRow ? (<span className='font-normal text-xs'>
-          {new Date(closeRow.Dt2).toLocaleDateString('en-US', dateOptions2) }
-          <br />{closeRow.Num2} {closeRow.Me2}
-          <br />{closeRow.R2} BALL
+        let bgColor = 'bg-white'; 
+            if(closeRow){
+              switch(closeRow['Q']){
+                case "BOT": bgColor = bgColors[0]; break;
+                case "GRN": bgColor = bgColors[1]; break;
+                case "BRN": bgColor = bgColors[2]; break;
+                case "FRG": bgColor = bgColors[3]; break;
+                case "DBL": bgColor = bgColors[4]; break;
+                default: bgColor = bgColors[5]; //Q
+              }
+            }
+        const monthData = closeRow ? (
+          <span className='font-normal text-xs '>
+            {new Date(closeRow.Dt2).toLocaleDateString('en-US', dateOptions2) }
+            <br />{closeRow.Num2} {closeRow.Me2}
+            {/* <br />{closeRow.R2} BALL */}
+            <br />
+            <span class="flex items-center">
+              <span className={classNames(bgColor, "w-5 h-5 flex items-center justify-center rounded-full text-white font-bold text-xs shadow-md")}>
+                {closeRow.R2}
+              </span> 
+              <span className='ml-1'>{closeRow.Q}</span>
+            </span>
           </span>)
           : "OPEN";
         return(
-        <th colSpan="3" onClick={() => handleMonthClick(month.number)} key={month.name} scope="col" className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
+        <th colSpan="3" onClick={() => handleMonthClick(month.number)} key={month.name} scope="col" className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center items-center justify-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
           {month.name}<br />
           {monthData} 
         </th>
@@ -103,14 +123,14 @@ export default function ContentX({state, num, onMonthClick}) {
             let closeRow = findLowestDate('Dt2',data.filter(x => new Date(x.Dt).getMonth()==month.number-1));
             //console.log('LowestDate.ROW', closeRow);
             let bgColor = 'bg-white'; //&& year >= new Date(closeRow['Dt']).getFullYear() && year <= new Date(closeRow['Dt2']).getFullYear()
-            if(closeRow ){
+            if(closeRow && year >= 2015 && year <= 2021){
               switch(closeRow['Q']){
-                case "BOT": bgColor = 'bg-pink-400'; break;
-                case "GRN": bgColor = 'bg-green-300'; break;
-                case "BRN": bgColor = 'bg-amber-600'; break;
-                case "FRG": bgColor = 'bg-red-400'; break;
-                case "DBL": bgColor = 'bg-blue-400'; break;
-                default: bgColor = 'bg-fuchsia-400'; //Q
+                case "BOT": bgColor = bgColors[0]; break;
+                case "GRN": bgColor = bgColors[1]; break;
+                case "BRN": bgColor = bgColors[2]; break;
+                case "FRG": bgColor = bgColors[3]; break;
+                case "DBL": bgColor = bgColors[4]; break;
+                default: bgColor = bgColors[5]; //Q
               }
             }
             const filterData = removeDuplicates(['Num','Dt','Q'], data.filter(
@@ -159,7 +179,17 @@ export default function ContentX({state, num, onMonthClick}) {
         {HEADER_MONTHS.map((month) => {
         let closeRow = findLowestDate('Dt2',data.filter(x => new Date(x.Dt).getMonth()==month.number-1));
         const monthData = closeRow ? parseInt(closeRow.R2)+1 : "-";
-        const bgColor = closeRow ? "bg-blue-700" : "bg-gray-500";
+        let bgColor = 'bg-gray-500'; //&& year >= new Date(closeRow['Dt']).getFullYear() && year <= new Date(closeRow['Dt2']).getFullYear()
+            if(closeRow){
+              switch(closeRow['Q']){
+                case "BOT": bgColor = bgColors[0]; break;
+                case "GRN": bgColor = bgColors[1]; break;
+                case "BRN": bgColor = bgColors[2]; break;
+                case "FRG": bgColor = bgColors[3]; break;
+                case "DBL": bgColor = bgColors[4]; break;
+                default: bgColor = bgColors[5]; //Q
+              }
+            }
         return(
         <th colSpan="3" onClick={() => handleMonthClick(month.number)} key={month.name} scope="col" className="sticky bottom-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
           <div className={classNames(bgColor, "w-10 h-10 flex items-center justify-center rounded-full text-white font-bold text-lg shadow-md")}>

@@ -11,7 +11,7 @@ import ContentPicks from './components/ContentPicks.jsx';
 import ContentX from './components/ContentX.jsx';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 const queryClient = new QueryClient();
-const DEFAULT_TAB = "X";
+const DEFAULT_TAB = "Sheet";
 
 export default function App() {
   const [state, setState] = useState('fl');
@@ -42,7 +42,7 @@ export default function App() {
         <main className="flex flex-col items-center">
           <MagicNumberBox onNumberChange={handleNumChange} num={num} />
           <Tabs onTabChange={handleTabChange} selectedTab={tab} />
-          { tab==='X' && <ContentX state={state} num={num} onMonthClick={handleMonthClick} /> }
+          { tab==='Sheet' && <ContentX state={state} num={num} onMonthClick={handleMonthClick} /> }
           { tab==='Magic' && <ContentMagic onNumberClick={handleNumClick} state={state} num={num} /> }
           { tab==='Tablet' && <ContentTablet state={state} num={num} /> }
           { tab==='Panel' && <ContentPanel state={state} num={num} panelMonth={panelMonth} onMonthChange={handlePanelMonthChange} /> }

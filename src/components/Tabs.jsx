@@ -1,7 +1,7 @@
 import React from 'react';
 
 const TAB_LIST = [
-    { name: 'X', href: '#', current: false },
+    { name: 'Sheet', href: '#', current: false },
     { name: 'Magic', href: '#', current: false },
     { name: 'Tablet', href: '#', current: false },
     { name: 'Panel', href: '#', current: true },
