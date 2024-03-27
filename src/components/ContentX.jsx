@@ -101,7 +101,7 @@ export default function ContentX({state, num, onMonthClick}) {
           </td>
           {HEADER_MONTHS.map((month) => {
             let closeRow = findLowestDate('Dt2',data.filter(x => new Date(x.Dt).getMonth()==month.number-1));
-            console.log('LowestDate.ROW', closeRow);
+            //console.log('LowestDate.ROW', closeRow);
             let bgColor = 'bg-white'; //&& year >= new Date(closeRow['Dt']).getFullYear() && year <= new Date(closeRow['Dt2']).getFullYear()
             if(closeRow ){
               switch(closeRow['Q']){
