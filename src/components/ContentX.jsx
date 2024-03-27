@@ -96,7 +96,7 @@ export default function ContentX({state, num, onMonthClick}) {
     <tbody>
       {years.map((year, index) => (
         <tr key={'yr-'+year}>
-          <td className='sticky left-0 z-11 border-b border-gray-200 bg-white whitespace-nowrap py-1 pl-3 pr-3 text-sm font-medium text-gray-900 sm:pl-3 lg:pl-3'>
+          <td key={'td0-'+year} className='sticky left-0 z-11 border-b border-gray-200 bg-white whitespace-nowrap py-1 pl-3 pr-3 text-sm font-medium text-gray-900 sm:pl-3 lg:pl-3'>
             {year}
           </td>
           {HEADER_MONTHS.map((month) => {
@@ -121,8 +121,8 @@ export default function ContentX({state, num, onMonthClick}) {
             <td key={'td1-'+month.name+'-'+year} className={classNames('bg-white', 'border-b border-gray-200 whitespace-nowrap py-1 pl-1 pr-1 text-xs font-bold text-gray-900 sm:pl-1 lg:pl-1')}>
               {filterData.map((x, i) => {
                 let c = "";
-                if(x.Dt == closeRow.Dt2) c="border-t-4 border-gray-900";
-                if(x.Dt == closeRow.Dt) c="border-b-4 border-gray-900";
+                if(closeRow && x.Dt == closeRow.Dt2) c="border-t-4 border-gray-900";
+                if(closeRow && x.Dt == closeRow.Dt) c="border-b-4 border-gray-900";
                 return( 
                 <span className={c} key={'span1-'+month.name+'-'+year+'-'+i}>
                   {i !==0 && <br />}
@@ -137,8 +137,8 @@ export default function ContentX({state, num, onMonthClick}) {
             <td key={'td3-'+month.name+'-'+year} className={classNames('bg-white', 'border-b border-gray-200 whitespace-nowrap py-1 pl-1 pr-1 text-xs font-normal text-gray-900 sm:pl-1 lg:pl-1')}>
               {filterData.map((x, i) => {
                 let c = "";
-                if(x.Dt == closeRow.Dt2) c="border-t-4 border-gray-900";
-                if(x.Dt == closeRow.Dt) c="border-b-4 border-gray-900";return( 
+                if(closeRow && x.Dt == closeRow.Dt2) c="border-t-4 border-gray-900";
+                if(closeRow && x.Dt == closeRow.Dt) c="border-b-4 border-gray-900";return( 
                 <span className={c} key={'span3-'+month.name+'-'+year+'-'+i}>
                   {i !==0 && <br />}
                   {x.Q}&nbsp;
