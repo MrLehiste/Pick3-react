@@ -86,7 +86,7 @@ export default function ContentX({state, num, onMonthClick}) {
           </span>)
           : "OPEN";
         return(
-        <th onClick={() => handleMonthClick(month.number)} key={month.name} scope="col" className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
+        <th colSpan="3" onClick={() => handleMonthClick(month.number)} key={month.name} scope="col" className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
           {month.name}<br />
           {monthData} 
         </th>
@@ -101,8 +101,9 @@ export default function ContentX({state, num, onMonthClick}) {
           </td>
           {HEADER_MONTHS.map((month) => {
             let closeRow = findLowestDate('Dt2',data.filter(x => new Date(x.Dt).getMonth()==month.number-1));
-            let bgColor = 'bg-white';
-            if(closeRow && year >= new Date(closeRow['Dt']).getFullYear() && year <= new Date(closeRow['Dt2']).getFullYear()){
+            console.log('LowestDate.ROW', closeRow);
+            let bgColor = 'bg-white'; //&& year >= new Date(closeRow['Dt']).getFullYear() && year <= new Date(closeRow['Dt2']).getFullYear()
+            if(closeRow ){
               switch(closeRow['Q']){
                 case "BOT": bgColor = 'bg-pink-400'; break;
                 case "GRN": bgColor = 'bg-green-300'; break;
@@ -112,23 +113,62 @@ export default function ContentX({state, num, onMonthClick}) {
                 default: bgColor = 'bg-fuchsia-400'; //Q
               }
             }
+            const filterData = removeDuplicates(['Num','Dt','Q'], data.filter(
+              x => new Date(x.Dt).getFullYear()==year && new Date(x.Dt).getMonth()==month.number-1
+            ));
             return(
-            <td key={'td-'+month.name+'-'+year} className={classNames(bgColor, 'border-b border-gray-200 whitespace-nowrap py-1 pl-1 pr-1 text-xs font-normal text-gray-900 sm:pl-1 lg:pl-1')}>
-              {removeDuplicates(['Num','Dt','Q'], data.filter(
-                x => new Date(x.Dt).getFullYear()==year && new Date(x.Dt).getMonth()==month.number-1
-              )).map(
-                (x, i) => {return( <span key={'span-'+month.name+'-'+year+'-'+i}>
+            <>
+            <td key={'td1-'+month.name+'-'+year} className={classNames('bg-white', 'border-b border-gray-200 whitespace-nowrap py-1 pl-1 pr-1 text-xs font-bold text-gray-900 sm:pl-1 lg:pl-1')}>
+              {filterData.map((x, i) => {
+                let c = "";
+                if(x.Dt == closeRow.Dt2) c="border-t-4 border-gray-900";
+                if(x.Dt == closeRow.Dt) c="border-b-4 border-gray-900";
+                return( 
+                <span className={c} key={'span1-'+month.name+'-'+year+'-'+i}>
                   {i !==0 && <br />}
-                  <strong>{x.Num}</strong>&nbsp;
-                  {x.Q}&nbsp;
-                  {new Date(x.Dt).toLocaleDateString('en-US', dateOptions)}
-                </span> )}
+                  {x.Num}
+                </span> 
+                )}
               )}
             </td>
+            <td key={'td2-'+month.name+'-'+year} className={classNames(bgColor, 'border-b border-gray-200 whitespace-nowrap py-1 pl-1 pr-1 text-xs font-normal text-gray-900 sm:pl-1 lg:pl-1')}>
+
+            </td>
+            <td key={'td3-'+month.name+'-'+year} className={classNames('bg-white', 'border-b border-gray-200 whitespace-nowrap py-1 pl-1 pr-1 text-xs font-normal text-gray-900 sm:pl-1 lg:pl-1')}>
+              {filterData.map((x, i) => {
+                let c = "";
+                if(x.Dt == closeRow.Dt2) c="border-t-4 border-gray-900";
+                if(x.Dt == closeRow.Dt) c="border-b-4 border-gray-900";return( 
+                <span className={c} key={'span3-'+month.name+'-'+year+'-'+i}>
+                  {i !==0 && <br />}
+                  {x.Q}&nbsp;
+                  {new Date(x.Dt).toLocaleDateString('en-US', dateOptions)}
+                </span> 
+                )}
+              )}
+            </td>
+            </>
           )})}
         </tr>
       ))}
     </tbody>
+    <tfoot>
+      <tr>
+        <th scope="col" className="sticky top-0 left-0 z-9 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8">
+          &nbsp;</th>
+        {HEADER_MONTHS.map((month) => {
+        let closeRow = findLowestDate('Dt2',data.filter(x => new Date(x.Dt).getMonth()==month.number-1));
+        const monthData = closeRow ? parseInt(closeRow.R2)+1 : "-";
+        const bgColor = closeRow ? "bg-blue-700" : "bg-gray-500";
+        return(
+        <th colSpan="3" onClick={() => handleMonthClick(month.number)} key={month.name} scope="col" className="sticky bottom-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
+          <div className={classNames(bgColor, "w-10 h-10 flex items-center justify-center rounded-full text-white font-bold text-lg shadow-md")}>
+            {monthData}
+          </div>
+        </th>
+        )})}
+      </tr>
+    </tfoot>
   </table>);
   }
 

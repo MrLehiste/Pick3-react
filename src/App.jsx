@@ -11,7 +11,7 @@ import ContentPicks from './components/ContentPicks.jsx';
 import ContentX from './components/ContentX.jsx';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 const queryClient = new QueryClient();
-const DEFAULT_TAB = "Magic";
+const DEFAULT_TAB = "X";
 
 export default function App() {
   const [state, setState] = useState('fl');
