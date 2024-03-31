@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchData } from '../util/http.js';
 import LoadingIndicator from './UI/LoadingIndicator.jsx';
 import ErrorBlock from './UI/ErrorBlock.jsx';
+import { Fragment } from 'react';
 
 const INIT_YEARS = [];
 const HEADER_MONTHS = [
@@ -29,9 +30,10 @@ export default function ContentX({state, num, onMonthClick}) {
     let y = [];
     let startYear = 1988; //Florida
     if(state=="ar") startYear = 2009;
+    console.log(state, startYear);
     for (let year = new Date().getFullYear(); year >= startYear; year--) { y.push(year); }
     setYears(y);
-  }, []);
+  }, [state]);
 
   function findLowestDate(dateField, array) {
     const validDates = array.filter(item => item[dateField]);
@@ -97,7 +99,7 @@ export default function ContentX({state, num, onMonthClick}) {
             <br />{closeRow.Num2} {closeRow.Me2}
             {/* <br />{closeRow.R2} BALL */}
             <br />
-            <span class="flex items-center">
+            <span className="flex items-center">
               <span className={classNames(bgColor, "w-5 h-5 flex items-center justify-center rounded-full text-white font-bold text-xs shadow-md")}>
                 {closeRow.R2}
               </span> 
@@ -122,8 +124,8 @@ export default function ContentX({state, num, onMonthClick}) {
           {HEADER_MONTHS.map((month) => {
             let closeRow = findLowestDate('Dt2',data.filter(x => new Date(x.Dt).getMonth()==month.number-1));
             //console.log('LowestDate.ROW', closeRow);
-            let bgColor = 'bg-white'; //&& year >= new Date(closeRow['Dt']).getFullYear() && year <= new Date(closeRow['Dt2']).getFullYear()
-            if(closeRow && year >= 2015 && year <= 2021){
+            let bgColor = 'bg-white'; //
+            if(closeRow && year >= new Date(closeRow['Dt']).getFullYear() && year <= new Date(closeRow['Dt2']).getFullYear()){ // && year >= 2015 && year <= 2021
               switch(closeRow['Q']){
                 case "BOT": bgColor = bgColors[0]; break;
                 case "GRN": bgColor = bgColors[1]; break;
@@ -137,14 +139,14 @@ export default function ContentX({state, num, onMonthClick}) {
               x => new Date(x.Dt).getFullYear()==year && new Date(x.Dt).getMonth()==month.number-1
             ));
             return(
-            <>
+            <Fragment key={"frag-"+month.name+year}>
             <td key={'td1-'+month.name+'-'+year} className={classNames('bg-white', 'border-b border-gray-200 whitespace-nowrap py-1 pl-1 pr-1 text-xs font-bold text-gray-900 sm:pl-1 lg:pl-1')}>
               {filterData.map((x, i) => {
                 let c = "";
                 if(closeRow && x.Dt == closeRow.Dt2) c="border-t-4 border-gray-900";
                 if(closeRow && x.Dt == closeRow.Dt) c="border-b-4 border-gray-900";
                 return( 
-                <span className={c} key={'span1-'+month.name+'-'+year+'-'+i}>
+                <span key={'td1-span-'+month.name+'-'+year+x+i} className={c}>
                   {i !==0 && <br />}
                   {x.Num}
                 </span> 
@@ -159,7 +161,7 @@ export default function ContentX({state, num, onMonthClick}) {
                 let c = "";
                 if(closeRow && x.Dt == closeRow.Dt2) c="border-t-4 border-gray-900";
                 if(closeRow && x.Dt == closeRow.Dt) c="border-b-4 border-gray-900";return( 
-                <span className={c} key={'span3-'+month.name+'-'+year+'-'+i}>
+                <span key={'td3-'+month.name+'-'+year+x+i} className={c}>
                   {i !==0 && <br />}
                   {x.Q}&nbsp;
                   {new Date(x.Dt).toLocaleDateString('en-US', dateOptions)}
@@ -167,7 +169,7 @@ export default function ContentX({state, num, onMonthClick}) {
                 )}
               )}
             </td>
-            </>
+            </Fragment>
           )})}
         </tr>
       ))}
@@ -191,7 +193,7 @@ export default function ContentX({state, num, onMonthClick}) {
               }
             }
         return(
-        <th colSpan="3" onClick={() => handleMonthClick(month.number)} key={month.name} scope="col" className="sticky bottom-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
+        <th colSpan="3" onClick={() => handleMonthClick(month.number)} key={'tfooter-th-'+month.name} scope="col" className="sticky bottom-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
           <div className={classNames(bgColor, "w-10 h-10 flex items-center justify-center rounded-full text-white font-bold text-lg shadow-md")}>
             {monthData}
           </div>
