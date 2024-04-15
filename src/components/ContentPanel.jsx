@@ -20,7 +20,7 @@ export default function ContentPanel({state, num, panelMonth, onMonthChange}) {
     setDays(Array.from({ length: getNumberOfDaysInMonth(event.target.value) }, (_, index) => index + 1));
   };
 
-  const panelUrl = 'https://pick3-function-api.azurewebsites.net/api/Panel?state='+state+'&num='+num+'&month='+panelMonth+'&code=jObvEG0duLEYTPf4ig4D0q6CiCicMZZJeDHbnamUnKsSTVGuj2FVLw==';
+  const panelUrl = import.meta.env.VITE_URL_PANEL+'state='+state+'&num='+num+'&month='+panelMonth;
   const { data: panelData, isPending, isError, error } = useQuery({
     queryKey: [state, num, 'panel', panelMonth],
     queryFn: ({ signal, queryKey }) => fetchData({ signal, url: panelUrl }),

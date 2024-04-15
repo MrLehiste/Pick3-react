@@ -14,7 +14,7 @@ export default function ContentPicks({state, num}) {
   const handleDateChange = (date) => { setMaxDate(date); };
 
   const strMaxDate = new Date(maxDate).toLocaleDateString('en-US', dateOptions);
-  const picksUrl = 'https://pick3-function-api.azurewebsites.net/api/Picks?month='+currentMonth+'&state='+state+'&num='+num+'&maxdt='+strMaxDate+'&code=sR8PRXHdJzeNXCQ9oZiqTLFqAHcFY4TnEEOgoipdG2KDOQNSOx2ROg==';
+  const picksUrl = import.meta.env.VITE_URL_PICKS + 'month='+currentMonth+'&state='+state+'&num='+num+'&maxdt='+strMaxDate;
   const { data: picksData, isPending, isError, error } = useQuery({
     queryKey: [state, num, 'picks', currentMonth, maxDate],
     queryFn: ({ signal, queryKey }) => fetchData({ signal, url: picksUrl }),

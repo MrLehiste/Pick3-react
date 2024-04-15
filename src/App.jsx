@@ -8,19 +8,22 @@ import ContentTablet from './components/ContentTablet.jsx';
 import ContentPanel from './components/ContentPanel.jsx';
 import ContentScramble from './components/ContentScramble.jsx';
 import ContentPicks from './components/ContentPicks.jsx';
-import ContentX from './components/ContentX.jsx';
+import ContentSheet from './components/ContentSheet.jsx';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 const queryClient = new QueryClient();
 const DEFAULT_TAB = "Sheet";
+const DEFAULT_STATE = "";
 
 export default function App() {
-  const [state, setState] = useState('fl');
-  const handleStateChange = (value) => { setState(value); setTab(DEFAULT_TAB); console.log('State changed', value); };
+  const [state, setState] = useState(DEFAULT_STATE);
+  const handleStateChange = (value) => { setState(value); localStorage.setItem('state', value); setTab(DEFAULT_TAB); console.log('State changed', value); };
   const handleDataLoaded = () => { setTab(DEFAULT_TAB); console.log('Data Loaded', state); };
   const handleDataUpdated = () => { queryClient.invalidateQueries({ queryKey: [state] }); setTab(DEFAULT_TAB); console.log('Data Updated', state); };
   
   const [num, setNum] = useState(0);
   useEffect(() => {
+    const storedState = localStorage.getItem('state');
+    if (storedState) { setState(storedState); }
     const storedValue = localStorage.getItem('magic-number');
     if (storedValue) { setNum(storedValue); }
     return () => {};
@@ -38,11 +41,11 @@ export default function App() {
     <>
       <Header />
       <QueryClientProvider client={queryClient}>
-        <StateSelect onStateChange={handleStateChange} onDataLoaded={handleDataLoaded} onDataUpdated={handleDataUpdated} />
+        <StateSelect selectedState={state} onStateChange={handleStateChange} onDataLoaded={handleDataLoaded} onDataUpdated={handleDataUpdated} />
         <main className="flex flex-col items-center">
           <MagicNumberBox onNumberChange={handleNumChange} num={num} />
           <Tabs onTabChange={handleTabChange} selectedTab={tab} />
-          { tab==='Sheet' && <ContentX state={state} num={num} onMonthClick={handleMonthClick} /> }
+          { tab==='Sheet' && <ContentSheet state={state} num={num} onMonthClick={handleMonthClick} /> }
           { tab==='Magic' && <ContentMagic onNumberClick={handleNumClick} state={state} num={num} /> }
           { tab==='Tablet' && <ContentTablet state={state} num={num} /> }
           { tab==='Panel' && <ContentPanel state={state} num={num} panelMonth={panelMonth} onMonthChange={handlePanelMonthChange} /> }

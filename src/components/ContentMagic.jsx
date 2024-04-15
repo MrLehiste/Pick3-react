@@ -4,7 +4,7 @@ import LoadingIndicator from './UI/LoadingIndicator.jsx';
 import ErrorBlock from './UI/ErrorBlock.jsx';
 
 export default function ContentMagic({state, num, onNumberClick}) {
-  const url = 'https://pick3-function-api.azurewebsites.net/api/Magic?state='+state+'&num='+num+'&code=JuT2P1rGtna9B7Dr3SlM425MA7yWRY0/3BFeeiJ9LMVIZw2H3sisNg==';
+  const url = import.meta.env.VITE_URL_MAGIC + 'state='+state+'&num='+num;
   const { data, isPending, isError, error } = useQuery({
     queryKey: [state, num, 'magic'],
     queryFn: ({ signal, queryKey }) => fetchData({ signal, url }),

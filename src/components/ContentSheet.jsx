@@ -21,7 +21,7 @@ const HEADER_MONTHS = [
   { name: 'December', number: 12 }
 ];
 
-export default function ContentX({state, num, onMonthClick}) {
+export default function ContentSheet({state, num, onMonthClick}) {
   const dateOptions = { month: 'numeric', day: 'numeric' };
   const dateOptions2 = { month: 'numeric', day: 'numeric', year: '2-digit' };
   function classNames(...classes) { return classes.filter(Boolean).join(' '); }
@@ -30,6 +30,7 @@ export default function ContentX({state, num, onMonthClick}) {
     let y = [];
     let startYear = 1988; //Florida
     if(state=="ar") startYear = 2009;
+    if(state=="mo") startYear = 1998;
     console.log(state, startYear);
     for (let year = new Date().getFullYear(); year >= startYear; year--) { y.push(year); }
     setYears(y);
@@ -56,7 +57,7 @@ export default function ContentX({state, num, onMonthClick}) {
     return Array.from(uniqueMap.values());
   }
 
-  const panelUrl = 'https://pick3-function-api.azurewebsites.net/api/Panel?month=0&state='+state+'&num='+num+'&code=jObvEG0duLEYTPf4ig4D0q6CiCicMZZJeDHbnamUnKsSTVGuj2FVLw=='; 
+  const panelUrl = import.meta.env.VITE_URL_PANEL+'month=0&state='+state+'&num='+num; 
   const { data, isPending, isError, error } = useQuery({
     queryKey: [state, num, 'panel', 0],
     queryFn: ({ signal, queryKey }) => fetchData({ signal, url: panelUrl }),

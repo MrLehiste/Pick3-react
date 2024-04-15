@@ -4,7 +4,7 @@ export default function Header() {
       <h1 className="text-xl font-semibold tracking-widest text-center uppercase md:text-4xl text-amber-800 font-title">
         Pick 3 Magic
       </h1>
-      <p className="text-stone-500 font-semibold">Captain Bob's Pick 3 Super System.</p>
+      <p className="text-stone-500 font-semibold">Pick 3 Super System.</p>
     </header>
   );
 }

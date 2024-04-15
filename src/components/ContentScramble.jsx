@@ -9,7 +9,7 @@ export default function ContentScramble({state, num}) {
   const dateOptions = { month: 'numeric', day: 'numeric', year: 'numeric' };
   const handleMonthChange = (event) => { setCurrentMonth(event.target.value); };
 
-  const scrambleUrl = 'https://pick3-function-api.azurewebsites.net/api/Scramble?month='+currentMonth+'&state='+state+'&num='+num+'&code=TkGrt/859Mk639WEfzuXhoLdWUYSrQWOzFc7ZE/viTYtkB/LUcLRWg==';
+  const scrambleUrl = import.meta.env.VITE_URL_SCRAM + 'month='+currentMonth+'&state='+state+'&num='+num;
   const { data: scrambleData, isPending, isError, error } = useQuery({
     queryKey: [state, num, 'scramble', currentMonth],
     queryFn: ({ signal, queryKey }) => fetchData({ signal, url: scrambleUrl }),

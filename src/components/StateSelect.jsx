@@ -4,17 +4,24 @@ import SvgMid from './SvgMid.jsx';
 import SvgEve from './SvgEve.jsx';
 import LoadingIndicator from './UI/LoadingIndicator.jsx';
 
-export default function StateSelect({ onStateChange, onDataLoaded, onDataUpdated }) {
-    const [selectedState, setSelectedState] = useState('fl');
+const STATES = [
+  {st: "", state: "-- Select State --", game: ""},
+  {st: "ar", state: "Arkansas", game: "Cash 3"},
+  {st: "fl", state: "Florida", game: "Pick 3"},
+  {st: "mo", state: "Missouri", game: "Pick 3"},
+];
+
+export default function StateSelect({ selectedState, onStateChange, onDataLoaded, onDataUpdated }) {
+    //const [selectedState, setSelectedState] = useState('fl');
     const handleStateChange = (event) => {
-      setSelectedState(event.target.value);
+      //setSelectedState(event.target.value);
       onStateChange(event.target.value);
       setDataLoaded(false);
     };
     const [updatingDraws, setUpdatingDraws] = useState(false);
     const handleUpdateDraws = () => {
       setUpdatingDraws(true);
-      const updateDrawsUrl = 'https://pick3-function-api.azurewebsites.net/api/UpdateDraws?code=bp3LiIDPjOy9E4u4Ti5cL/EJW0CspBb1OljrnkNBuVuaa4CQNMmSJw==';
+      const updateDrawsUrl = import.meta.env.VITE_URL_UPDATE + '&state=' + selectedState;
       fetch(updateDrawsUrl)
         .then(response => response.json())
         .then(data => {
@@ -48,8 +55,8 @@ export default function StateSelect({ onStateChange, onDataLoaded, onDataUpdated
     const [lastDraws, setLastDraws] = useState(EMPTY_DRAW);
     const [retryCount, setRetryCount] = useState(0);
     useEffect(() => {
-      const lastDrawsUrl = 'https://pick3-function-api.azurewebsites.net/api/Function1?code=QkFG8WBGJqanfaa0mB6hVpn/03XoLd5Klbqq4X5deWJaNUgHulGHiA=='
-        + '&state=' + selectedState;
+      if(selectedState=="") return;
+      const lastDrawsUrl = import.meta.env.VITE_URL_LAST_2 + '&state=' + selectedState;
       console.log('Loading...', lastDrawsUrl);
       fetch(lastDrawsUrl)
         .then(response => {
@@ -61,6 +68,8 @@ export default function StateSelect({ onStateChange, onDataLoaded, onDataUpdated
           setLastDraws(data); 
           setDataLoaded(true);
           onDataLoaded();
+          console.log(data[0].Date, dateAge(data[0].Date));
+          if(dateAge(data[0].Date) > (selectedState=="fl" ? 3 : 2)) handleUpdateDraws();
         })
         .catch(error => {
           console.error('There was a problem fetching the data:', error);
@@ -72,6 +81,11 @@ export default function StateSelect({ onStateChange, onDataLoaded, onDataUpdated
           else { window.location.reload(); }
         });
     }, [selectedState, updatingDraws, retryCount]); 
+
+    const dateAge = (startDate) => {
+      const diffInMilliseconds = Math.abs(new Date() - new Date(startDate));
+      return(Math.ceil(diffInMilliseconds / (1000 * 60 * 60 * 24)));
+    };
 
     const dateOptions = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
     const displayDraws = !dataLoaded //lastDraws.every(element => EMPTY_DRAW.includes(element))
@@ -94,8 +108,9 @@ export default function StateSelect({ onStateChange, onDataLoaded, onDataUpdated
       <div className="flex flex-col items-center mb-2">
         <div>
           <select className="px-2 py-1 mb-2 mr-2" value={selectedState} onChange={handleStateChange}>
-              <option value="ar">Arkansas</option>
-              <option value="fl">Florida</option>
+              {STATES.map((s, index) => (
+                <option key={"st-opt-"+index} value={s.st}>{s.state} {s.game}</option>
+              ))}
           </select>
           <button onClick={handleUpdateDraws} disabled={updatingDraws} className="px-2 py-1 font-semibold uppercase rounded text-stone-900 bg-amber-100 hover:bg-amber-500">
             { updatingDraws ? 'Updating ...' : 'Update Draws' }
