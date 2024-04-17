@@ -7,8 +7,8 @@ export default function ContentTablet({state, num}) {
   const dateOptions = { month: 'numeric', day: 'numeric', year: 'numeric' };
   function classNames(...classes) { return classes.filter(Boolean).join(' '); }
 
-  const tabletUrl = import.meta.env.VITE_URL_TABLET + 'state='+state+'&num='+num;
-  const historyUrl = import.meta.env.VITE_URL_TABLET + 'h=1&state='+state+'&num='+num;
+  const tabletUrl = import.meta.env.VITE_URL_TABLET + '&state='+state+'&num='+num;
+  const historyUrl = import.meta.env.VITE_URL_TABLET + '&h=1&state='+state+'&num='+num;
 
   const { data: tabletData, isPending, isError, error } = useQuery({
     queryKey: [state, num, 'tablet'],

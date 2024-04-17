@@ -9,9 +9,10 @@ import ContentPanel from './components/ContentPanel.jsx';
 import ContentScramble from './components/ContentScramble.jsx';
 import ContentPicks from './components/ContentPicks.jsx';
 import ContentSheet from './components/ContentSheet.jsx';
+import ContentScoreboard from './components/ContentScoreboard.jsx';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 const queryClient = new QueryClient();
-const DEFAULT_TAB = "Sheet";
+const DEFAULT_TAB = "Scoreboard";
 const DEFAULT_STATE = "";
 
 export default function App() {
@@ -51,6 +52,7 @@ export default function App() {
           { tab==='Panel' && <ContentPanel state={state} num={num} panelMonth={panelMonth} onMonthChange={handlePanelMonthChange} /> }
           { tab==='Scramble' && <ContentScramble state={state} num={num} /> }
           { tab==='Picks' && <ContentPicks state={state} num={num} /> }
+          { tab==='Scoreboard' && <ContentScoreboard state={state} /> }
         </main>
       </QueryClientProvider>
     </>

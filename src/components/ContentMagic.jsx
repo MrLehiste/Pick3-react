@@ -4,7 +4,7 @@ import LoadingIndicator from './UI/LoadingIndicator.jsx';
 import ErrorBlock from './UI/ErrorBlock.jsx';
 
 export default function ContentMagic({state, num, onNumberClick}) {
-  const url = import.meta.env.VITE_URL_MAGIC + 'state='+state+'&num='+num;
+  const url = import.meta.env.VITE_URL_MAGIC + '&state='+state+'&num='+num;
   const { data, isPending, isError, error } = useQuery({
     queryKey: [state, num, 'magic'],
     queryFn: ({ signal, queryKey }) => fetchData({ signal, url }),

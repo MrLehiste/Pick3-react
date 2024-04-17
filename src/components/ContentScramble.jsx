@@ -9,7 +9,7 @@ export default function ContentScramble({state, num}) {
   const dateOptions = { month: 'numeric', day: 'numeric', year: 'numeric' };
   const handleMonthChange = (event) => { setCurrentMonth(event.target.value); };
 
-  const scrambleUrl = import.meta.env.VITE_URL_SCRAM + 'month='+currentMonth+'&state='+state+'&num='+num;
+  const scrambleUrl = import.meta.env.VITE_URL_SCRAM + '&month='+currentMonth+'&state='+state+'&num='+num;
   const { data: scrambleData, isPending, isError, error } = useQuery({
     queryKey: [state, num, 'scramble', currentMonth],
     queryFn: ({ signal, queryKey }) => fetchData({ signal, url: scrambleUrl }),

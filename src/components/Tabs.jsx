@@ -7,6 +7,7 @@ const TAB_LIST = [
     { name: 'Panel', href: '#', current: true },
     { name: 'Scramble', href: '#', current: false },
     { name: 'Picks', href: '#', current: false },
+    { name: 'Scoreboard', href: '#', current: false },
   ]
   
   function classNames(...classes) {

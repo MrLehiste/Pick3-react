@@ -57,7 +57,7 @@ export default function ContentSheet({state, num, onMonthClick}) {
     return Array.from(uniqueMap.values());
   }
 
-  const panelUrl = import.meta.env.VITE_URL_PANEL+'month=0&state='+state+'&num='+num; 
+  const panelUrl = import.meta.env.VITE_URL_PANEL+'&month=0&state='+state+'&num='+num; 
   const { data, isPending, isError, error } = useQuery({
     queryKey: [state, num, 'panel', 0],
     queryFn: ({ signal, queryKey }) => fetchData({ signal, url: panelUrl }),

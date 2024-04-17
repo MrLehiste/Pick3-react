@@ -1,0 +1,115 @@
+.bang {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    background-color: #FF0000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bang:before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #FFFFFF;
+    border-radius: 50%;
+    animation: cartoon-bang 0.5s ease-in-out alternate infinite;
+  }
+
+  @keyframes cartoon-bang {
+    0% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(1.1);
+    }
+  }
+
+  .jaggedy-edge {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .jaggedy-edge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #4FD1C5; /* Change color as needed */
+    transform: skewY(-5deg);
+    z-index: -1;
+  }
+
+  .jaggedy-edge::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #4FD1C5; /* Change color as needed */
+    transform: skewY(5deg) rotate(1deg);
+    z-index: -1;
+  }
+
+  .hypnotic{
+    background-color: #fcfcfc;
+    opacity: 0.7;
+    background-image: radial-gradient(circle at center center, #2813b6, #fcfcfc), repeating-radial-gradient(circle at center center, #2813b6, #2813b6, 2px, transparent 4px, transparent 2px);
+    background-blend-mode: multiply;
+  }
+
+  .wavebox {
+    --mask: 
+      linear-gradient(#000 0 0) 50%/calc(100% - 55.5px) calc(100% - 55.5px) no-repeat,
+      radial-gradient(farthest-side,#000 98%,#0000) 0 0/60px 60px round;
+    -webkit-mask: var(--mask);
+            mask: var(--mask);
+  }
+
+  .wave {
+    --size: 50px;
+    opacity: 0.5;
+    mask: radial-gradient(var(--size) at 50% 0%, #0000 99%, red 101%) 
+      50% var(--size)/calc(4 * var(--size)) 100% repeat-x;
+  }
+
+  .zigzag {
+    --a: 90deg; /* the angle of the spikes */
+    --s: 60px;  /* the size of the spikes */
+    
+    mask:  
+      conic-gradient(from calc(var(--a)/-2) at bottom,
+        #000 var(--a),#0000 0) 50%/var(--s);
+  }
+
+  .zigbox {
+    --mask: 
+      linear-gradient(#000 0 0) center/calc(100% - 60px) calc(100% - 60px) no-repeat,
+      conic-gradient(from  135deg at top   ,#0000,#000 1deg 89deg,#0000 90deg) 0 0   /60px 30px space no-repeat,
+      conic-gradient(from  -45deg at bottom,#0000,#000 1deg 89deg,#0000 90deg) 0 100%/60px 30px space no-repeat,
+      conic-gradient(from   45deg at left  ,#0000,#000 1deg 89deg,#0000 90deg) 0 0   /30px 60px no-repeat space,
+      conic-gradient(from -135deg at right ,#0000,#000 1deg 89deg,#0000 90deg) 100% 0/30px 60px no-repeat space;
+    -webkit-mask: var(--mask);
+            mask: var(--mask);
+  }
+
+  .repeating-linear {
+    border: 5px solid pink;
+    border-image: repeating-linear-gradient( 45deg, pink, pink 1%, purple 1%, purple 8%) 10;
+  }
+  
+  .repeating-linear:hover {
+    border-image: repeating-linear-gradient( 45deg, purple, purple 1%, pink 1%, pink 8%) 10;
+    color: purple;
+  }
+
+  .trident-box {
+    border: 8px solid pink;
+    border-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/652/pink-doily-bdr.png") 30;
+  }
