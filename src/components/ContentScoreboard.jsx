@@ -4,7 +4,6 @@ import { fetchData } from '../util/http.js';
 import LoadingIndicator from './UI/LoadingIndicator.jsx';
 import ErrorBlock from './UI/ErrorBlock.jsx';
 import { Fragment } from 'react';
-import './ContentScoreboard.css';
 
 const INIT_YEARS = [];
 const HEADER_MONTHS = [
@@ -32,6 +31,7 @@ export default function Scoreboard({ state }) {
     let startYear = 1988; //Florida
     if(state=="ar") startYear = 2009;
     if(state=="mo") startYear = 1998;
+    startYear = 2019;
     console.log(state, startYear);
     for (let year = new Date().getFullYear(); year >= startYear; year--) { y.push(year); }
     setYears(y);
@@ -111,7 +111,7 @@ export default function Scoreboard({ state }) {
               {filterData.map((x, i) => {
                 let c = "";
                 if(x.Sq3) c="trident-box";
-                if(x.Magic) c="repeating-linear";
+                if(x.Magic) c="magic-box";
                 let bgColor = 'bg-white'; 
                 if(x){
                   switch(x['Q1']){
@@ -150,7 +150,7 @@ export default function Scoreboard({ state }) {
         let bgColor = 'bg-gray-500';
         return(
         <th key={'tfooter-th-'+month.name} scope="col" className="sticky bottom-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
-          <div className={classNames(bgColor, "hypnotic w-10 h-10 flex items-center justify-center rounded-full text-white font-bold text-lg shadow-md")}>
+          <div className={classNames(bgColor, "hypnotic-circle w-10 h-10 flex items-center justify-center rounded-full text-white font-bold text-lg shadow-md")}>
             {month.nam}
           </div>
         </th>

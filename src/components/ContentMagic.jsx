@@ -15,6 +15,7 @@ export default function ContentMagic({state, num, onNumberClick}) {
   const handleNumberClick = (num) => { onNumberClick(num); };
 
   const dateOptions = { month: 'numeric', day: 'numeric', year: 'numeric' };
+  function classNames(...classes) { return classes.filter(Boolean).join(' '); }
 
   let content;
   if (isPending) { content = <LoadingIndicator />; }
@@ -40,16 +41,23 @@ export default function ContentMagic({state, num, onNumberClick}) {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200 bg-white">
-          {data && data.map((magic) => (
+          {data && data.map((magic) => {
+            const cssbox = magic.Magic ? "magic-box" : "";
+            return (
             <tr key={magic.Num}>
-              <td className="whitespace-nowrap py-1 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                <button onClick={() => handleNumberClick(magic.Num)}>{magic.Num}</button>
+              <td className="whitespace-nowrap py-1 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 text-center">
+                <span className={classNames(cssbox, "p-1")}>
+                  <button onClick={() => handleNumberClick(magic.Num)}>{magic.Num}</button>
+                </span>
               </td>
-              <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{new Date(magic.Date).toLocaleDateString('en-US', dateOptions)}</td>
+              <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500 text-center">
+                <span className={classNames(cssbox, "p-1")}>{new Date(magic.Dtm).toLocaleDateString('en-US', dateOptions)}</span>
+              </td>
               <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{magic.Me}</td>
               
             </tr>
-          ))}
+          )}
+          )}
         </tbody>
       </table>
     </>);

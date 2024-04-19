@@ -29,7 +29,12 @@ export default function ContentScramble({state, num}) {
     <thead className="bg-gray-50">
       <tr>
         <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-          Num ({scrambleData.length})
+          <span className="flex items-center">
+            <span className="bg-gray-900 w-6 h-6 flex items-center justify-center rounded-full text-white font-bold text-xs shadow-md">
+              {scrambleData.length}
+            </span> 
+            <span className='ml-1'>Nums</span>
+          </span>
         </th>
         <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
           <select value={currentMonth} onChange={handleMonthChange}>
@@ -55,11 +60,11 @@ export default function ContentScramble({state, num}) {
     </thead>
     <tbody className="divide-y divide-gray-200 bg-white">
       {scrambleData.map((d) => (
-        <tr key={d.Num + d.Date + d.Me}>
+        <tr key={d.Num + d.Dt + d.Me}>
           <td className="whitespace-nowrap py-1 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
             {d.Num}
           </td>
-          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{new Date(d.Date).toLocaleDateString('en-US', dateOptions)}</td>
+          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{new Date(d.Dt).toLocaleDateString('en-US', dateOptions)}</td>
           <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{d.Me}</td>
           
         </tr>

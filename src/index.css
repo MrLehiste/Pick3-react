@@ -9,3 +9,25 @@ body {
   background-attachment: fixed;
   background-size: cover;
 }
+
+.magic-box {
+  border: 5px solid pink;
+  border-image: repeating-linear-gradient( 45deg, pink, pink 1%, purple 1%, purple 8%) 10;
+}
+
+.magic-box:hover {
+  border-image: repeating-linear-gradient( 45deg, purple, purple 1%, pink 1%, pink 8%) 10;
+  color: purple;
+}
+
+.trident-box {
+  border: 8px solid pink;
+  border-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/652/pink-doily-bdr.png") 30;
+}
+
+.hypnotic-circle{
+  background-color: #fcfcfc;
+  opacity: 0.7;
+  background-image: radial-gradient(circle at center center, #2813b6, #fcfcfc), repeating-radial-gradient(circle at center center, #2813b6, #2813b6, 2px, transparent 4px, transparent 2px);
+  background-blend-mode: multiply;
+}

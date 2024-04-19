@@ -76,9 +76,9 @@ export default function StateSelect({ selectedState, onStateChange, onDataLoaded
           if(retryCount <= 3) {
             setTimeout(() => {
               setRetryCount(retryCount + 1);
-            }, 5000);
+            }, retryCount * 5000);
           }
-          else { window.location.reload(); }
+          //else { window.location.reload(); }
         });
     }, [selectedState, updatingDraws, retryCount]); 
 

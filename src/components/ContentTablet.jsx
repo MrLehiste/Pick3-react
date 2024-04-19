@@ -29,7 +29,12 @@ export default function ContentTablet({state, num}) {
       <thead className="bg-gray-50">
         <tr>
           <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-            Num ({tabletData.filter(d => d.Me === "M").length})
+            <span className="flex items-center">
+              <span className="bg-gray-900 w-6 h-6 flex items-center justify-center rounded-full text-white font-bold text-xs shadow-md">
+                {tabletData.filter(d => d.Me === "M").length}
+              </span> 
+              <span className='ml-1'>Nums</span>
+            </span>
           </th>
           <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
             Date
@@ -38,7 +43,12 @@ export default function ContentTablet({state, num}) {
             Mid
           </th>
           <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-            Num ({tabletData.filter(d => d.Me === "E").length})
+            <span className="flex items-center">
+              <span className="bg-gray-900 w-6 h-6 flex items-center justify-center rounded-full text-white font-bold text-xs shadow-md">
+                {tabletData.filter(d => d.Me === "E").length}
+              </span> 
+              <span className='ml-1'>Nums</span>
+            </span>
           </th>
           <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
             Date
@@ -59,7 +69,7 @@ export default function ContentTablet({state, num}) {
             )}>
               {d.Num}
             </td>
-            <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{new Date(d.Date).toLocaleDateString('en-US', dateOptions)}</td>
+            <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{new Date(d.Dt).toLocaleDateString('en-US', dateOptions)}</td>
             <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{d.Me}</td>
             {d.Me === "M" && <><td /><td /><td /></> }
           </tr>
@@ -89,7 +99,12 @@ export default function ContentTablet({state, num}) {
         
       </th>
       <th scope="col" className="py-3.5 text-left text-sm font-semibold text-gray-900">
-        Num ({historyData.length})
+        <span className="flex items-center">
+          <span className="bg-gray-900 w-6 h-6 flex items-center justify-center rounded-full text-white font-bold text-xs shadow-md">
+            {historyData.length}
+          </span> 
+          <span className='ml-1'>Nums</span>
+        </span>
       </th>
       <th colSpan={2} scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
         Date
@@ -106,7 +121,7 @@ export default function ContentTablet({state, num}) {
         <td className='whitespace-nowrap py-1 pr-3 text-sm font-medium text-gray-900'>
           {h.Num}
         </td>
-        <td colSpan={2} className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{new Date(h.Date).toLocaleDateString('en-US', dateOptions)}</td>
+        <td colSpan={2} className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{new Date(h.Dt).toLocaleDateString('en-US', dateOptions)}</td>
         <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500"></td>
       </tr>
     ))}
