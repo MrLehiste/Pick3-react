@@ -4,7 +4,12 @@ import { fetchData } from '../util/http.js';
 import LoadingIndicator from './UI/LoadingIndicator.jsx';
 import ErrorBlock from './UI/ErrorBlock.jsx';
 import { Fragment } from 'react';
+import DatePicker from "react-datepicker";
+import 'react-datepicker/dist/react-datepicker.css';
+import { Switch } from '@headlessui/react';
 
+const INIT_FROM = new Date(2019, 0, 1);
+const INIT_TO = new Date();
 const INIT_YEARS = [];
 const HEADER_MONTHS = [
   { nam: 'Jan', name: 'January', number: 1 },
@@ -25,44 +30,20 @@ export default function Scoreboard({ state }) {
   const dateOptions = { month: 'numeric', day: 'numeric' };
   const dateOptions2 = { month: 'numeric', day: 'numeric', year: 'numeric' };
   function classNames(...classes) { return classes.filter(Boolean).join(' '); }
+  const [dtFrom, setDtFrom] = useState(INIT_FROM);
+  const handleFromChange = (date) => { setDtFrom(date); };
+  const [dtTo, setDtTo] = useState(INIT_TO);
+  const handleToChange = (date) => { setDtTo(date); };
   const [years, setYears] = useState(INIT_YEARS);
   useEffect(()=>{
     let y = [];
-    let startYear = 1988; //Florida
-    if(state=="ar") startYear = 2009;
-    if(state=="mo") startYear = 1998;
-    startYear = 2019;
-    console.log(state, startYear);
-    for (let year = new Date().getFullYear(); year >= startYear; year--) { y.push(year); }
+    for (let year = dtTo.getFullYear(); year >= dtFrom.getFullYear(); year--) { y.push(year); }
     setYears(y);
-  }, [state]);
+  }, [state, dtFrom, dtTo]);
 
-  function findLowestDate(dateField, array) {
-    const validDates = array.filter(item => item[dateField]);
-    if (validDates.length === 0) return null;
-    let lowestDateRow = validDates[0]; //new Date(validDates[0][dateField]);
-    for (let i = 1; i < validDates.length; i++) {
-      const currentDate = new Date(validDates[i][dateField]);
-      if (!isNaN(currentDate.getTime()) && currentDate < new Date(lowestDateRow[dateField])) {
-        lowestDateRow = validDates[i];
-      }
-    }
-    return lowestDateRow;
-  }
-  function removeDuplicates(fields, arr) {
-    const uniqueMap = new Map();
-    arr.forEach(obj => {
-        const key = fields.map(field => obj[field]).join('|');
-        uniqueMap.set(key, obj);
-    });
-    return Array.from(uniqueMap.values());
-  }
-
-  const dtFrom = new Date(2019, 0, 1);
-  const dtTo = new Date();
   const scoreUrl = import.meta.env.VITE_URL_SCORE+'&state='+state+'&from='+dtFrom.toLocaleDateString('en-US', dateOptions2)+'&to='+dtTo.toLocaleDateString('en-US', dateOptions2);
   const { data, isPending, isError, error } = useQuery({
-    queryKey: [state, 'score'],
+    queryKey: [state, 'score', dtFrom, dtTo],
     queryFn: ({ signal, queryKey }) => fetchData({ signal, url: scoreUrl }),
     staleTime: 1000 * 60 * 60 * 12, //12 hours
     cacheTime: 1000 * 60 * 60 * 12, //12 hours
@@ -75,10 +56,10 @@ export default function Scoreboard({ state }) {
       <ErrorBlock title="An error occurred" message={error.info?.message || 'Failed to fetch magic data.'} />
     );
   }
-
+  const [enabled, setEnabled] = useState(false);
   const bgColors = ['bg-pink-300','bg-green-400','bg-amber-600','bg-red-500','bg-blue-700','bg-yellow-300'];
   if (data) {
-    content = (<table className="min-w-full border-separate border-spacing-0">
+    const resultsTable = !enabled ? (<table className="min-w-full border-separate border-spacing-0">
     <thead>
       <tr>
         <th scope="col" className="sticky top-0 left-0 z-9 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8">
@@ -157,7 +138,100 @@ export default function Scoreboard({ state }) {
         )})}
       </tr>
     </tfoot>
+  </table>) : (<table className="block min-w-full divide-y divide-gray-300 border-separate border-spacing-0">
+    <thead className="bg-gray-50">
+      <tr>
+        <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+          <span className="flex items-center">
+            <span className="bg-gray-900 w-6 h-6 flex items-center justify-center rounded-full text-white font-bold text-xs shadow-md">
+              {data.length}
+            </span> 
+            <span className='ml-1'>Nums</span>
+          </span>
+        </th>
+        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+          
+        </th>
+        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+          
+        </th>
+        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+        
+        </th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-gray-200 bg-white">
+      {data.map((d) => { 
+        const cBox = d.Magic ? "magic-box" : (d.Sq3 ? "trident-box" : "");
+        return(
+        <tr key={d.Num + d.Dtm} className={cBox}>
+          <td className="whitespace-nowrap py-1 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+            {new Date(d.Dtm).toLocaleDateString('en-US', dateOptions2)}
+          </td>
+          <td className={classNames(cBox, "whitespace-nowrap px-3 py-1 text-sm text-gray-500")}>
+            {d.Num} {new Date(d.Dtm).getHours() == 12 ? "M" : "E"}
+          </td>
+          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
+            {new Date(d.Dtm1).toLocaleDateString('en-US', dateOptions2)}
+          </td>
+          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
+            {d.Squiggly}
+          </td>
+          
+        </tr>
+      )})}
+    </tbody>
   </table>);
+    content = (<div className="flex">
+      <div className="grid grid-cols-1 justify-items-center">
+        <div className="rounded-lg overflow-hidden shadow-lg">
+          <table className="divide-y divide-gray-300">
+            <thead className="bg-gray-50">
+              <tr>
+                <th colSpan="1" className="px-3 py-3.5 text-right text-sm font-semibold text-gray-900">
+                <Switch.Group as="div" className="flex items-center justify-between">
+                  <span className="flex flex-grow flex-col">
+                    <Switch.Label as="span" className="text-sm font-medium text-gray-900" passive>
+                      Horizontal ==
+                    </Switch.Label>
+                  </span>
+                  <Switch
+                    checked={enabled}
+                    onChange={setEnabled}
+                    className={classNames(
+                      enabled ? 'bg-indigo-500' : 'bg-green-500',
+                      'relative inline-flex ml-2 h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2'
+                    )}
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={classNames(
+                        enabled ? 'translate-x-5' : 'translate-x-0',
+                        'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out'
+                      )}
+                    />
+                  </Switch>
+                  <Switch.Label as="span" className="ml-3 text-sm">
+                    <span className="font-medium text-gray-900">Vertical ||</span>
+                  </Switch.Label>
+                </Switch.Group>
+                </th>
+                <th></th>
+              </tr>
+              <tr>
+                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                  From: <DatePicker selected={dtFrom} onChange={handleFromChange} />
+                </th>
+                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                  To: <DatePicker selected={dtTo} onChange={handleToChange} />
+                </th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+        <div className="rounded-lg overflow-hidden shadow-lg">{resultsTable}</div>
+      </div>
+    </div>);
   }
 
 

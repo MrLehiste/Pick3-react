@@ -31,3 +31,7 @@ body {
   background-image: radial-gradient(circle at center center, #2813b6, #fcfcfc), repeating-radial-gradient(circle at center center, #2813b6, #2813b6, 2px, transparent 4px, transparent 2px);
   background-blend-mode: multiply;
 }
+
+.react-datepicker-popper {
+  z-index: 9999 !important;
+}
