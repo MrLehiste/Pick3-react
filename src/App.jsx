@@ -12,6 +12,7 @@ import ContentSheet from './components/ContentSheet.jsx';
 import ContentScoreboard from './components/ContentScoreboard.jsx';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 const queryClient = new QueryClient();
+const DEFAULT_TABS = ['Sheet', 'Magic', 'Tablet', 'Panel', 'Scramble', 'Picks', 'Scoreboard']
 const DEFAULT_TAB = "Scoreboard";
 const DEFAULT_STATE = "";
 
@@ -45,7 +46,7 @@ export default function App() {
         <StateSelect selectedState={state} onStateChange={handleStateChange} onDataLoaded={handleDataLoaded} onDataUpdated={handleDataUpdated} />
         <main className="flex flex-col items-center">
           <MagicNumberBox onNumberChange={handleNumChange} num={num} />
-          <Tabs onTabChange={handleTabChange} selectedTab={tab} />
+          <Tabs onTabChange={handleTabChange} selectedTab={tab} tabList={DEFAULT_TABS} />
           { tab==='Sheet' && <ContentSheet state={state} num={num} onMonthClick={handleMonthClick} /> }
           { tab==='Magic' && <ContentMagic onNumberClick={handleNumClick} state={state} num={num} /> }
           { tab==='Tablet' && <ContentTablet state={state} num={num} /> }

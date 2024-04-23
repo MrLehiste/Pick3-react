@@ -1,20 +1,10 @@
 import React from 'react';
-
-const TAB_LIST = [
-    { name: 'Sheet', href: '#', current: false },
-    { name: 'Magic', href: '#', current: false },
-    { name: 'Tablet', href: '#', current: false },
-    { name: 'Panel', href: '#', current: true },
-    { name: 'Scramble', href: '#', current: false },
-    { name: 'Picks', href: '#', current: false },
-    { name: 'Scoreboard', href: '#', current: false },
-  ]
   
   function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
   }
   
-  export default function Tabs({ onTabChange, selectedTab }) {
+  export default function Tabs({ onTabChange, selectedTab, tabList }) {
     const handleTabChange = (event) => {
         onTabChange(event.target.value);
     };
@@ -36,24 +26,24 @@ const TAB_LIST = [
             defaultValue={selectedTab}
             onChange={handleTabChange}
           >
-            {TAB_LIST.map((tab) => (
-              <option key={tab.name} value={tab.name}>{tab.name}</option>
+            {tabList.map((tab, index) => (
+              <option key={tab + index} value={tab}>{tab}</option>
             ))}
           </select>
         </div>
         <div className="hidden sm:block">
           <nav className="flex space-x-4" aria-label="Tabs">
-            {TAB_LIST.map((tab) => (
+            {tabList.map((tab, index) => (
               <a
-                key={tab.name}
-                href={tab.href}
+                key={index + tab}
+                href="#"
                 className={classNames(
-                  (tab.name == selectedTab) ? 'text-gray-800 bg-white' : 'text-gray-600 hover:text-gray-800',
+                  (tab == selectedTab) ? 'text-gray-800 bg-white' : 'text-gray-600 hover:text-gray-800',
                   'rounded-md px-3 py-2 text-sm font-medium'
                 )}
-                aria-current={(tab.name == selectedTab) ? 'page' : undefined}
+                aria-current={(tab == selectedTab) ? 'page' : undefined}
                 onClick={handleTabClick}
-              >{tab.name}</a>
+              >{tab}</a>
             ))}
           </nav>
         </div>
