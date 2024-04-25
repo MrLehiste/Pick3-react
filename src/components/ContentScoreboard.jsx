@@ -25,6 +25,14 @@ const HEADER_MONTHS = [
   { nam: 'Nov', name: 'November', number: 11 },
   { nam: 'Dec', name: 'December', number: 12 }
 ];
+const Q_MAP = [
+  {q1: 'O', q: 'BOT', bg: 'bg-pink-300'}, 
+  {q1: 'G', q: 'GRN', bg: 'bg-green-400'}, 
+  {q1: 'B', q: 'BRN', bg: 'bg-amber-600'}, 
+  {q1: 'F', q: 'FRG', bg: 'bg-red-500'}, 
+  {q1: 'D', q: 'DBL', bg: 'bg-blue-600'}, 
+  {q1: 'Q', q: 'Q', bg: 'bg-yellow-300'}
+];
 
 export default function Scoreboard({ state }) {
   const dateOptions = { month: 'numeric', day: 'numeric' };
@@ -52,10 +60,10 @@ export default function Scoreboard({ state }) {
     cacheTime: 1000 * 60 * 60 * 12, //12 hours
   });
 
-  let content;
-  if (isPending) { content = <LoadingIndicator />; }
+  let resultsTable;
+  if (isPending) { resultsTable = <LoadingIndicator />; }
   if (isError) {
-    content = (
+    resultsTable = (
       <ErrorBlock title="An error occurred" message={error.info?.message || 'Failed to fetch magic data.'} />
     );
   }
@@ -71,17 +79,16 @@ export default function Scoreboard({ state }) {
   const bgColors = ['bg-pink-300','bg-green-400','bg-amber-600','bg-red-500','bg-blue-600','bg-yellow-300'];
   const qList = ['BOT', 'GRN', 'BRN', 'FRG', 'DBL', 'Q'];
   if (data) {
-    let resultsTable = "";
     if(tab == SCORE_TABS[0]) resultsTable = (<table className="min-w-full border-separate border-spacing-0">
       <thead>
         <tr>
-          <th scope="col" className="sticky top-0 left-0 z-9 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8">
+          <th scope="col" className="rounded-tl-lg sticky top-0 left-0 z-9 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8">
             Year
           </th>
           {HEADER_MONTHS.map((month) => {
 
           return(
-          <th key={month.name} scope="col" className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center items-center justify-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
+          <th key={month.name} scope="col" className={classNames(month.number == 12 ? "rounded-tr-lg" : "", "sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center items-center justify-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter")}>
             {month.name}
           </th>
           )})}
@@ -200,12 +207,12 @@ export default function Scoreboard({ state }) {
     if(tab == SCORE_TABS[2]) resultsTable = (<table className="min-w-full border-separate border-spacing-0">
     <thead>
       <tr>
-        <th scope="col" className="sticky top-0 left-0 z-9 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8">
+        <th scope="col" className="rounded-tl-lg sticky top-0 left-0 z-9 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8">
           
         </th>
         {HEADER_MONTHS.map((month) => {
         return(
-        <th key={month.name} scope="col" className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center items-center justify-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
+        <th key={month.name} scope="col" className={classNames(month.number == 12 ? "rounded-tr-lg" : "", "sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center items-center justify-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter")}>
           {month.name}
         </th>
         )})}
@@ -218,46 +225,16 @@ export default function Scoreboard({ state }) {
             {d}
           </td>
           {HEADER_MONTHS.map((month) => {
-            //const bgColors = ['bg-pink-300','bg-green-400','bg-amber-600','bg-red-500','bg-blue-700','bg-yellow-300'];
-            //const botColor = ["bg-pink-300", "bg-pink-400", "bg-pink-500"]; botColor[i < botColor.length ? i : botColor.length - 1]
-            const botData = data.filter(x => x.Q1 == "BOT" && new Date(x.Dtm).getDate()==d && new Date(x.Dtm).getMonth()==month.number-1);
-            const grnData = data.filter(x => x.Q1 == "GRN" && new Date(x.Dtm).getDate()==d && new Date(x.Dtm).getMonth()==month.number-1);
-            const brnData = data.filter(x => x.Q1 == "BRN" && new Date(x.Dtm).getDate()==d && new Date(x.Dtm).getMonth()==month.number-1);
-            const frgData = data.filter(x => x.Q1 == "FRG" && new Date(x.Dtm).getDate()==d && new Date(x.Dtm).getMonth()==month.number-1);
-            const dblData = data.filter(x => x.Q1 == "DBL" && new Date(x.Dtm).getDate()==d && new Date(x.Dtm).getMonth()==month.number-1);
-            const qqqData = data.filter(x => x.Q1[0] == "Q" && new Date(x.Dtm).getDate()==d && new Date(x.Dtm).getMonth()==month.number-1);
-            const botElem = (
+            const qData = data.filter(x => new Date(x.Dtm).getDate()==d && new Date(x.Dtm).getMonth()==month.number-1
+                            && Q_MAP.filter((_, index) => enabledQs[index]).map(eq => eq.q1).includes(x.Q11));
+            return(
+            <td key={'dot-td1-'+month.name+'-'+d} className={classNames('bg-white', 'border-b border-l border-gray-200 whitespace-nowrap py-1 pl-1 pr-1 text-xs font-bold text-gray-900 sm:pl-1 lg:pl-1')}>
               <span className="flex items-center">
-                {enabledQs[0] && botData.map((x, i) => (
-                  <span key={'dot-span-bot-'+d+index+x.Dtm+i} className={classNames(bgColors[0], "w-7 h-7 flex items-center justify-center rounded-full text-black font-bold text-xs shadow-md")}>
-                  BOT</span>
-                ))}
-                {enabledQs[1] && grnData.map((x, i) => (
-                  <span key={'dot-span-grn-'+d+index+x.Dtm+i} className={classNames(bgColors[1], "w-7 h-7 flex items-center justify-center rounded-full text-black font-bold text-xs shadow-md")}>
-                  GRN</span>
-                ))}
-                {enabledQs[2] && brnData.map((x, i) => (
-                  <span key={'dot-span-brn-'+d+index+x.Dtm+i} className={classNames(bgColors[2], "w-7 h-7 flex items-center justify-center rounded-full text-black font-bold text-xs shadow-md")}>
-                  BRN</span>
-                ))}
-                {enabledQs[3] && frgData.map((x, i) => (
-                  <span key={'dot-span-brn-'+d+index+x.Dtm+i} className={classNames(bgColors[3], "w-7 h-7 flex items-center justify-center rounded-full text-black font-bold text-xs shadow-md")}>
-                  FRG</span>
-                ))}
-                {enabledQs[4] && dblData.map((x, i) => (
-                  <span key={'dot-span-brn-'+d+index+x.Dtm+i} className={classNames(bgColors[4], "w-7 h-7 flex items-center justify-center rounded-full text-black font-bold text-xs shadow-md")}>
-                  DBL</span>
-                ))}
-                {enabledQs[5] && qqqData.map((x, i) => (
-                  <span key={'dot-span-qqq-'+d+index+x.Dtm+i} className={classNames(bgColors[5], "w-7 h-7 flex items-center justify-center rounded-full text-black font-bold text-xs shadow-md")}>
+                {qData.map((x, i) => (
+                  <span key={'dot-span-q-'+d+index+x.Dtm+i} className={classNames(Q_MAP.filter(m => m.q1 == x.Q11)[0].bg, "w-7 h-7 flex items-center justify-center rounded-full text-black font-bold text-xs shadow-md")}>
                   {x.Q1}</span>
                 ))}
               </span>
-            );
-            
-            return(
-            <td key={'dot-td1-'+month.name+'-'+d} className={classNames('bg-white', 'border-b border-l border-gray-200 whitespace-nowrap py-1 pl-1 pr-1 text-xs font-bold text-gray-900 sm:pl-1 lg:pl-1')}>
-              {botElem}
             </td>
           )})}
         </tr>
@@ -265,12 +242,12 @@ export default function Scoreboard({ state }) {
     </tbody>
     <tfoot>
       <tr>
-        <th scope="col" className="sticky top-0 left-0 z-9 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8">
+        <th scope="col" className="rounded-bl-lg sticky top-0 left-0 z-9 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8">
           &nbsp;</th>
         {HEADER_MONTHS.map((month) => {
         let bgColor = 'bg-gray-500';
         return(
-        <th key={'tfooter-th-'+month.name} scope="col" className="sticky bottom-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
+        <th key={'tfooter-th-'+month.name} scope="col" className={classNames(month.number == 12 ? "rounded-br-lg" : "", "sticky bottom-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter")}>
           <div className={classNames(bgColor, "hypnotic-circle w-10 h-10 flex items-center justify-center rounded-full text-white font-bold text-lg shadow-md")}>
             {month.nam}
           </div>
@@ -278,46 +255,48 @@ export default function Scoreboard({ state }) {
         )})}
       </tr>
     </tfoot>
-  </table>);
-    const qRow = (tab == SCORE_TABS[2]) ? (<tr>
-      <th colSpan="2" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-        <span className="flex justify-center items-center">
-        {qList.map((q, i) => (
-          <span onClick={() => updateQ(i)} key={'qlist-'+q} className={classNames(enabledQs[i] ? bgColors[i] : "bg-white", "ml-5 w-10 h-10 flex items-center justify-center rounded-full text-black font-bold text-xs shadow-md")}>
-            {q}</span>
-        ))}
-        </span>
-      </th>
-    </tr>) : "";
-    content = (<div className="flex">
-      <div className="grid grid-cols-1 justify-items-center">
-        <div className="rounded-lg overflow-hidden shadow-lg">
-          <table className="divide-y divide-gray-300">
-            <thead className="bg-gray-200">
-              <tr>
-                <th colSpan={2} className="pt-2">
-                  <div className="flex justify-center items-center">
-                    <Tabs onTabChange={handleTabChange} selectedTab={tab} tabList={SCORE_TABS} />
-                  </div>
-                </th>
-              </tr>
-              <tr>
-                <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                  From: <DatePicker selected={dtFrom} onChange={handleFromChange} />
-                </th>
-                <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                  To: <DatePicker selected={dtTo} onChange={handleToChange} /> 
-                </th>
-              </tr>
-              {qRow}
-            </thead>
-          </table>
-        </div>
-        <div className="rounded-lg overflow-hidden shadow-lg">{resultsTable}</div>
-      </div>
-    </div>);
+    </table>);
   }
-
+  const selectedQs = Q_MAP.filter((_, index) => enabledQs[index]).map(eq => eq.q1);
+  const qRow = (tab == SCORE_TABS[2]) ? (<tr>
+    <th colSpan="2" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+      <span className="flex justify-center items-center">
+      {Q_MAP.map((q, i) => (
+        <span onClick={() => updateQ(i)} key={'qlist-'+q.q} className={classNames(enabledQs[i] ? q.bg : "bg-white", "ml-5 w-10 h-10 flex items-center justify-center rounded-full text-black font-bold text-xs shadow-md")}>
+          {q.q}</span>
+      ))}
+      </span>
+      {JSON.stringify(selectedQs)}
+    </th>
+  </tr>) : "";
+  
+  const content = (<div className="flex">
+    <div className="grid grid-cols-1 justify-items-center">
+      <div className="rounded-lg overflow-hidden shadow-lg">
+        <table className="divide-y divide-gray-300">
+          <thead className="bg-gray-200">
+            <tr>
+              <th colSpan={2} className="pt-2">
+                <div className="flex justify-center items-center">
+                  <Tabs onTabChange={handleTabChange} selectedTab={tab} tabList={SCORE_TABS} />
+                </div>
+              </th>
+            </tr>
+            <tr>
+              <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                From: <DatePicker selected={dtFrom} onChange={handleFromChange} />
+              </th>
+              <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                To: <DatePicker selected={dtTo} onChange={handleToChange} /> 
+              </th>
+            </tr>
+            {qRow}
+          </thead>
+        </table>
+      </div>
+      <div>{resultsTable}</div>
+    </div>
+  </div>);
 
   return (
   <div className="px-4 sm:px-6 lg:px-8">

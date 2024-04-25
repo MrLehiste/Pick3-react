@@ -147,6 +147,7 @@ export default function ContentSheet({state, num, onMonthClick}) {
                 let c = "";
                 if(closeRow && x.Dt == closeRow.Dt2) c="border-t-4 border-gray-900";
                 if(closeRow && x.Dt == closeRow.Dt) c="border-b-4 border-gray-900";
+                if(x.Magic) c += " magic-box";
                 return( 
                 <span key={'td1-span-'+month.name+'-'+year+x+i} className={c}>
                   {i !==0 && <br />}
