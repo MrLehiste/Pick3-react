@@ -42,18 +42,18 @@ const MAGIC_INTERVAL = [
 ]
 //const bgColors = ['bg-pink-300','bg-green-400','bg-amber-600','bg-red-500','bg-blue-600','bg-yellow-300'];
 
-export default function Scoreboard({ state }) {
+export default function Scoreboard({ state, onPageChange }) {
   const dateOptions = { month: 'numeric', day: 'numeric' };
   const dateOptions2 = { month: 'numeric', day: 'numeric', year: 'numeric' };
   function classNames(...classes) { return classes.filter(Boolean).join(' '); }
   const SCORE_TABS = ['Horizontal ==', 'Vertical ||', 'Days Dot Plot ⚫', 'Years Dot Plot ⚫', 'Magic Interval'];
   const [tab, setTab] = useState(SCORE_TABS[0]);
-  const handleTabChange = (value) => { setTab(value); localStorage.setItem('score-tab', value); };
+  const handleTabChange = (value) => { setTab(value); localStorage.setItem('score-tab', value); onPageChange("Scoreboard " + (SCORE_TABS.indexOf(value)+1) ); };
   const [dtFrom, setDtFrom] = useState(INIT_FROM);
   const handleFromChange = (date) => { setDtFrom(date); localStorage.setItem('score-from', date); };
   useEffect(() => {
     const storedTab = localStorage.getItem('score-tab');
-    if (storedTab) { setTab(storedTab); }
+    if (storedTab) { setTab(storedTab); onPageChange("Scoreboard " + (SCORE_TABS.indexOf(storedTab)+1) ); }
     const storedDtFrom = localStorage.getItem('score-from');
     if (storedDtFrom) { setDtFrom(new Date(storedDtFrom)); }
     const storedQs = localStorage.getItem('score-qs');
@@ -98,6 +98,31 @@ export default function Scoreboard({ state }) {
   }
   if (data) {
     const qData = data.filter(x => Q_MAP.filter((_, index) => enabledQs[index]).map(eq => eq.q1).includes(x.Q11));
+    const dotPlotFooter = (tab == SCORE_TABS[0] || tab == SCORE_TABS[2] || tab == SCORE_TABS[3]) ? (<tfoot>
+      <tr>
+        <th scope="col" className="rounded-bl-lg sticky top-0 left-0 z-9 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8">
+          &nbsp;</th>
+        {HEADER_MONTHS.map((month) => {
+        return(
+        <th key={'tfooter-th-'+month.name} scope="col" className="sticky bottom-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
+          <div className='grid place-items-center'>
+            <div className="bg-gray-800 w-10 h-10 flex items-center justify-center rounded-full text-white font-bold text-lg shadow-md">
+              {qData.filter(x => new Date(x.Dtm).getMonth()==month.number-1).length}
+            </div>
+            {month.nam}
+          </div>
+        </th>
+        )})}
+        <th scope="col" className="rounded-br-lg sticky bottom-0 right-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-8 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8">
+          <div className='grid place-items-center'>
+            <div className="bg-red-600 w-10 h-10 flex items-center justify-center rounded-full text-white font-bold text-lg shadow-md">
+              {qData.length}
+            </div>
+            TOTAL
+          </div>
+        </th>
+      </tr>
+    </tfoot>) : "";
     if(tab == SCORE_TABS[0]) resultsTable = (<table className="min-w-full border-separate border-spacing-0">
       <thead>
         <tr>
@@ -105,12 +130,14 @@ export default function Scoreboard({ state }) {
             Year
           </th>
           {HEADER_MONTHS.map((month) => {
-
           return(
-          <th key={month.name} scope="col" className={classNames(month.number == 12 ? "rounded-tr-lg" : "", "sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center items-center justify-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter")}>
+          <th key={month.name} scope="col" className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center items-center justify-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
             {month.name}
           </th>
           )})}
+          <th scope="col" className="rounded-tr-lg sticky top-0 left-0 z-9 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8">
+  
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -141,26 +168,20 @@ export default function Scoreboard({ state }) {
                   </div>
                   )}
                 )}
+                {/* {filterData.length == 0 && "EMPTY"} */}
               </td>
             )})}
+            <td className='border-b border-l border-gray-200 bg-white whitespace-nowrap py-1 pl-3 pr-3 text-sm font-medium text-gray-900 sm:pl-3 lg:pl-3'>
+              <div className='grid place-items-center'>
+                <div className="bg-gray-800 w-10 h-10 flex items-center justify-center rounded-full text-white font-bold text-lg shadow-md">
+                  {qData.filter(x => new Date(x.Dtm).getFullYear()==year).length}
+                </div>
+              </div>
+            </td>
           </tr>
         ))}
       </tbody>
-      <tfoot>
-        <tr>
-          <th scope="col" className="sticky top-0 left-0 z-9 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8">
-            &nbsp;</th>
-          {HEADER_MONTHS.map((month) => {
-          let bgColor = 'bg-gray-500';
-          return(
-          <th key={'tfooter-th-'+month.name} scope="col" className="sticky bottom-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
-            <div className={classNames(bgColor, "hypnotic-circle w-10 h-10 flex items-center justify-center rounded-full text-white font-bold text-lg shadow-md")}>
-              {month.nam}
-            </div>
-          </th>
-          )})}
-        </tr>
-      </tfoot>
+      {dotPlotFooter}
     </table>);
     if(tab == SCORE_TABS[1]) {
       resultsTable = (<table className="block min-w-full divide-y divide-gray-300 border-separate border-spacing-0">
@@ -171,7 +192,7 @@ export default function Scoreboard({ state }) {
                 <span className="bg-gray-900 w-7 h-7 flex items-center justify-center rounded-full text-white font-bold text-xs shadow-md">
                   {qData.length}
                 </span>
-                <span className='ml-1'>Entries</span>
+                <span className='ml-1'>Draws</span>
               </span>
             </th>
             <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
@@ -204,31 +225,6 @@ export default function Scoreboard({ state }) {
         </tbody>
       </table>);
     }
-    const dotPlotFooter = (tab == SCORE_TABS[2] || tab == SCORE_TABS[3]) ? (<tfoot>
-      <tr>
-        <th scope="col" className="rounded-bl-lg sticky top-0 left-0 z-9 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8">
-          &nbsp;</th>
-        {HEADER_MONTHS.map((month) => {
-        return(
-        <th key={'tfooter-th-'+month.name} scope="col" className="sticky bottom-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter">
-          <div className='grid place-items-center'>
-            <div className="bg-gray-800 w-10 h-10 flex items-center justify-center rounded-full text-white font-bold text-lg shadow-md">
-              {qData.filter(x => new Date(x.Dtm).getMonth()==month.number-1).length}
-            </div>
-            {month.nam}
-          </div>
-        </th>
-        )})}
-        <th scope="col" className="rounded-br-lg sticky bottom-0 right-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-8 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8">
-          <div className='grid place-items-center'>
-            <div className="bg-red-600 w-10 h-10 flex items-center justify-center rounded-full text-white font-bold text-lg shadow-md">
-              {qData.length}
-            </div>
-            TOTAL
-          </div>
-        </th>
-      </tr>
-    </tfoot>) : "";
     if(tab == SCORE_TABS[2]) {
       const days31 = Array.from({ length: 31 }, (_, i) => i + 1);
       resultsTable = (<table className="min-w-full border-separate border-spacing-0">

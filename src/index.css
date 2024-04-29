@@ -20,9 +20,14 @@ body {
   color: purple;
 }
 
-.trident-box {
+.trident1-box {
   border: 8px solid pink;
   border-image: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/652/pink-doily-bdr.png") 30;
+}
+
+.trident-box {
+  border: 5px solid blue;
+  border-image: repeating-linear-gradient( 45deg, pink, pink 1%, blue 1%, blue 8%) 10;
 }
 
 .hypnotic-circle{
