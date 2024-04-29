@@ -46,7 +46,7 @@ export default function Scoreboard({ state, onPageChange }) {
   const dateOptions = { month: 'numeric', day: 'numeric' };
   const dateOptions2 = { month: 'numeric', day: 'numeric', year: 'numeric' };
   function classNames(...classes) { return classes.filter(Boolean).join(' '); }
-  const SCORE_TABS = ['Horizontal ==', 'Vertical ||', 'Days Dot Plot ⚫', 'Years Dot Plot ⚫', 'Magic Interval'];
+  const SCORE_TABS = ['Years Dot Plot', 'Horizontal ==', 'Vertical ||', 'Days Dot Plot', 'Magic Interval'];
   const [tab, setTab] = useState(SCORE_TABS[0]);
   const handleTabChange = (value) => { setTab(value); localStorage.setItem('score-tab', value); onPageChange("Scoreboard " + (SCORE_TABS.indexOf(value)+1) ); };
   const [dtFrom, setDtFrom] = useState(INIT_FROM);
@@ -98,7 +98,7 @@ export default function Scoreboard({ state, onPageChange }) {
   }
   if (data) {
     const qData = data.filter(x => Q_MAP.filter((_, index) => enabledQs[index]).map(eq => eq.q1).includes(x.Q11));
-    const dotPlotFooter = (tab == SCORE_TABS[0] || tab == SCORE_TABS[2] || tab == SCORE_TABS[3]) ? (<tfoot>
+    const dotPlotFooter = (tab == SCORE_TABS[0] || tab == SCORE_TABS[1] || tab == SCORE_TABS[3]) ? (<tfoot>
       <tr>
         <th scope="col" className="rounded-bl-lg sticky top-0 left-0 z-9 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8">
           &nbsp;</th>
@@ -123,7 +123,7 @@ export default function Scoreboard({ state, onPageChange }) {
         </th>
       </tr>
     </tfoot>) : "";
-    if(tab == SCORE_TABS[0]) resultsTable = (<table className="min-w-full border-separate border-spacing-0">
+    if(tab == SCORE_TABS[1]) resultsTable = (<table className="min-w-full border-separate border-spacing-0">
       <thead>
         <tr>
           <th scope="col" className="rounded-tl-lg sticky top-0 left-0 z-9 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8">
@@ -183,7 +183,7 @@ export default function Scoreboard({ state, onPageChange }) {
       </tbody>
       {dotPlotFooter}
     </table>);
-    if(tab == SCORE_TABS[1]) {
+    if(tab == SCORE_TABS[2]) {
       resultsTable = (<table className="block min-w-full divide-y divide-gray-300 border-separate border-spacing-0">
         <thead className="bg-gray-50">
           <tr>
@@ -225,7 +225,7 @@ export default function Scoreboard({ state, onPageChange }) {
         </tbody>
       </table>);
     }
-    if(tab == SCORE_TABS[2]) {
+    if(tab == SCORE_TABS[3]) {
       const days31 = Array.from({ length: 31 }, (_, i) => i + 1);
       resultsTable = (<table className="min-w-full border-separate border-spacing-0">
       <thead>
@@ -275,7 +275,7 @@ export default function Scoreboard({ state, onPageChange }) {
       {dotPlotFooter}
       </table>);
     }
-    if(tab == SCORE_TABS[3]) resultsTable = (<table className="min-w-full border-separate border-spacing-0">
+    if(tab == SCORE_TABS[0]) resultsTable = (<table className="min-w-full border-separate border-spacing-0">
     <thead>
       <tr>
         <th scope="col" className="rounded-tl-lg sticky top-0 left-0 z-9 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8">
