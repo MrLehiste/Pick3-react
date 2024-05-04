@@ -3,7 +3,7 @@ import { fetchData } from '../util/http.js';
 import LoadingIndicator from './UI/LoadingIndicator.jsx';
 import ErrorBlock from './UI/ErrorBlock.jsx';
 
-export default function ContentTablet({state, num}) {
+export default function DrawsTablet({state, num}) {
   const dateOptions = { month: 'numeric', day: 'numeric', year: 'numeric' };
   function classNames(...classes) { return classes.filter(Boolean).join(' '); }
 

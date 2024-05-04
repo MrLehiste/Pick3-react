@@ -6,43 +6,14 @@ import ErrorBlock from './UI/ErrorBlock.jsx';
 import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
 import Tabs from './Tabs.jsx';
+import { HEADER_MONTHS, Q_MAP, MAGIC_INTERVAL } from './UI/constants';
 
 const INIT_FROM = new Date(2019, 0, 1);
 const INIT_TO = new Date();
 const INIT_YEARS = [];
-const HEADER_MONTHS = [
-  { nam: 'Jan', name: 'January', number: 1 },
-  { nam: 'Feb', name: 'February', number: 2 },
-  { nam: 'Mar', name: 'March', number: 3 },
-  { nam: 'Apr', name: 'April', number: 4 },
-  { nam: 'May', name: 'May', number: 5 },
-  { nam: 'Jun', name: 'June', number: 6 },
-  { nam: 'Jul', name: 'July', number: 7 },
-  { nam: 'Aug', name: 'August', number: 8 },
-  { nam: 'Sep', name: 'September', number: 9 },
-  { nam: 'Oct', name: 'October', number: 10 },
-  { nam: 'Nov', name: 'November', number: 11 },
-  { nam: 'Dec', name: 'December', number: 12 }
-];
-const Q_MAP = [
-  {q1: 'O', q: 'BOT', bg: 'bg-pink-300'},
-  {q1: 'G', q: 'GRN', bg: 'bg-green-400'},
-  {q1: 'B', q: 'BRN', bg: 'bg-amber-600'},
-  {q1: 'Q', q: 'Q', bg: 'bg-yellow-300'},
-  {q1: 'F', q: 'FRG', bg: 'bg-red-500'},
-  {q1: 'D', q: 'DBL', bg: 'bg-blue-600'},
-];
-const MAGIC_INTERVAL = [
-  { min: 0, max: 99, text: "0 - 99"},
-  { min: 100, max: 199, text: "100 - 199"},
-  { min: 200, max: 299, text: "200 - 299"},
-  { min: 300, max: 399, text: "300 - 399"},
-  { min: 400, max: 499, text: "400 - 499"},
-  { min: 500, max: 9999, text: "500 +"},
-]
 //const bgColors = ['bg-pink-300','bg-green-400','bg-amber-600','bg-red-500','bg-blue-600','bg-yellow-300'];
 
-export default function Scoreboard({ state, onPageChange }) {
+export default function ContentScoreboard({ state, onPageChange }) {
   const dateOptions = { month: 'numeric', day: 'numeric' };
   const dateOptions2 = { month: 'numeric', day: 'numeric', year: 'numeric' };
   function classNames(...classes) { return classes.filter(Boolean).join(' '); }

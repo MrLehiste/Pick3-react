@@ -21,7 +21,7 @@ const HEADER_MONTHS = [
   { name: 'December', number: 12 }
 ];
 
-export default function ContentSheet({state, num, onMonthClick}) {
+export default function PanelSheet({state, num, onMonthClick}) {
   const dateOptions = { month: 'numeric', day: 'numeric' };
   const dateOptions2 = { month: 'numeric', day: 'numeric', year: '2-digit' };
   function classNames(...classes) { return classes.filter(Boolean).join(' '); }
@@ -59,7 +59,7 @@ export default function ContentSheet({state, num, onMonthClick}) {
 
   const panelUrl = import.meta.env.VITE_URL_PANEL+'&month=0&state='+state+'&num='+num; 
   const { data, isPending, isError, error } = useQuery({
-    queryKey: [state, num, 'panel', 0],
+    queryKey: [state, num, 'panel'],
     queryFn: ({ signal, queryKey }) => fetchData({ signal, url: panelUrl }),
     staleTime: 1000 * 60 * 60 * 12, //12 hours 
     cacheTime: 1000 * 60 * 60 * 12, //12 hours      

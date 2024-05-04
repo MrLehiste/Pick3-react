@@ -4,7 +4,7 @@ import { fetchData } from '../util/http.js';
 import LoadingIndicator from './UI/LoadingIndicator.jsx';
 import ErrorBlock from './UI/ErrorBlock.jsx';
 
-export default function ContentScramble({state, num}) {
+export default function DrawsScramble({state, num}) {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
   const dateOptions = { month: 'numeric', day: 'numeric', year: 'numeric' };
   const handleMonthChange = (event) => { setCurrentMonth(event.target.value); };

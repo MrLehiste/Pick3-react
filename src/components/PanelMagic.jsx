@@ -3,7 +3,7 @@ import { fetchData } from '../util/http.js';
 import LoadingIndicator from './UI/LoadingIndicator.jsx';
 import ErrorBlock from './UI/ErrorBlock.jsx';
 
-export default function ContentMagic({state, num, onNumberClick}) {
+export default function PanelMagic({state, num, onNumberClick}) {
   const url = import.meta.env.VITE_URL_MAGIC + '&state='+state+'&num='+num;
   const { data, isPending, isError, error } = useQuery({
     queryKey: [state, num, 'magic'],
