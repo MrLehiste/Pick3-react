@@ -54,13 +54,12 @@ export default function PanelDotPlot({ state, num }) {
             return(
             <td key={'pdot-td-'+month.name+'-'+d} className={classNames('bg-white', 'border-b border-l border-gray-200 whitespace-nowrap py-1 pl-1 pr-1 text-xs font-bold text-gray-900 sm:pl-1 lg:pl-1')}>
               <span className="flex items-center">
-                
                 {data.filter(x => new Date(x.Dt).getDate()==d && new Date(x.Dt).getMonth()==month.number-1)
                 .map((x, i) => (
                   i == 0 ? <span key={'pdot-span-'+month.name+d+x.Dtm+i} className={classNames(month.closed ? "bg-blue-800" : "bg-red-600", "mr-1 text-white w-7 h-7 flex items-center justify-center rounded-full font-bold text-xs shadow-md")}>
                   {d} 
                   </span> 
-                  : <span className='text-sm'>x</span> 
+                  : <span key={'pdot-span-'+month.name+d+x.Dtm+i} className='text-sm'>x</span> 
                 ))}
               </span>
             </td>

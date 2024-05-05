@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchData } from '../util/http.js';
 import LoadingIndicator from './UI/LoadingIndicator.jsx';
 import ErrorBlock from './UI/ErrorBlock.jsx';
+import SvgEve from './SvgEve.jsx';
+import SvgMid from './SvgMid.jsx';
 
 export default function DrawsScramble({state, num}) {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 1);
@@ -33,7 +35,7 @@ export default function DrawsScramble({state, num}) {
             <span className="bg-gray-900 w-6 h-6 flex items-center justify-center rounded-full text-white font-bold text-xs shadow-md">
               {scrambleData.length}
             </span> 
-            <span className='ml-1'>Nums</span>
+            <span className='ml-1'>Draws</span>
           </span>
         </th>
         <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
@@ -54,7 +56,20 @@ export default function DrawsScramble({state, num}) {
           </select>
         </th>
         <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-          Mid/Eve
+          <span className="flex items-center mb-1">
+            <span><SvgMid /> Mid</span>
+            <span className="bg-gray-900 w-5 h-5 ml-1 flex items-center justify-center rounded-full text-white font-bold text-xs shadow-md">
+              {scrambleData.filter(d => d.Me === "M").length}
+            </span> 
+            <span className='ml-1'>Draws</span>
+          </span>
+          <span className="flex items-center">
+            <span><SvgEve /> Eve</span>
+            <span className="bg-gray-900 w-5 h-5 ml-2 flex items-center justify-center rounded-full text-white font-bold text-xs shadow-md">
+              {scrambleData.filter(d => d.Me === "E").length}
+            </span> 
+            <span className='ml-1'>Draws</span>
+          </span>
         </th>
       </tr>
     </thead>
@@ -65,8 +80,10 @@ export default function DrawsScramble({state, num}) {
             {d.Num}
           </td>
           <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{new Date(d.Dt).toLocaleDateString('en-US', dateOptions)}</td>
-          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{d.Me}</td>
-          
+          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
+            {d.Me=="M" && <span><SvgMid /> Mid</span>}
+            {d.Me=="E" && <span><SvgEve /> Eve</span>}
+          </td>
         </tr>
       ))}
     </tbody>

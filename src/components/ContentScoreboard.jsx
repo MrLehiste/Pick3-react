@@ -339,12 +339,15 @@ export default function ContentScoreboard({ state, onPageChange }) {
   //const selectedQs = Q_MAP.filter((_, index) => enabledQs[index]).map(eq => eq.q1);
   const qRow = data && (tab !== SCORE_TABS[4]) ? (<tr>
     <th colSpan="2" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-      <span className="flex justify-center items-center">
+      <div className="flex justify-center items-center">
       {Q_MAP.map((q, i) => (
-        <span onClick={() => updateQ(i)} key={'qlist-'+q.q} className={classNames(enabledQs[i] ? q.bg : "bg-white", "ml-5 w-10 h-10 flex items-center justify-center rounded-full text-black font-bold text-lg shadow-md")}>
-          {enabledQs[i] ? data.filter(d => d.Q11 == q.q1).length : q.q}</span>
+      <div key={'qlist-top'+q.q} className='grid place-items-center'>
+        <div onClick={() => updateQ(i)} key={'qlist-'+q.q} className={classNames(enabledQs[i] ? q.bg : "bg-white", "ml-5 w-10 h-10 flex items-center justify-center rounded-full text-black font-bold text-lg shadow-md")}>
+          {enabledQs[i] ? data.filter(d => d.Q11 == q.q1).length : q.q} </div>
+          {enabledQs[i] && <span className='pl-4'>{q.q}</span>}
+      </div>
       ))}
-      </span>
+      </div>
       {/* {JSON.stringify(selectedQs)} */}
     </th>
   </tr>) : "";

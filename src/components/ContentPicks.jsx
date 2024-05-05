@@ -1,113 +1,96 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query'
-import { fetchData } from '../util/http.js';
-import LoadingIndicator from './UI/LoadingIndicator.jsx';
-import ErrorBlock from './UI/ErrorBlock.jsx';
+import { useState, useEffect } from 'react';
+import Tabs from './Tabs.jsx';
 import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
 
-export default function ContentPicks({state, num}) {
-  const dateOptions = { month: 'numeric', day: 'numeric', year: 'numeric' };
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth() + 2);
-  const handleMonthChange = (event) => { setCurrentMonth(event.target.value); };
-  const [maxDate, setMaxDate] = useState(new Date() + 1);
-  const handleDateChange = (date) => { setMaxDate(date); };
+const PICKS_TABS = ['Daily Picks', 'Monthly Picks'];
 
-  const strMaxDate = new Date(maxDate).toLocaleDateString('en-US', dateOptions);
-  const picksUrl = import.meta.env.VITE_URL_PICKS + '&month='+currentMonth+'&state='+state+'&num='+num+'&maxdt='+strMaxDate;
-  const { data: picksData, isPending, isError, error } = useQuery({
-    queryKey: [state, num, 'picks', currentMonth, maxDate],
-    queryFn: ({ signal, queryKey }) => fetchData({ signal, url: picksUrl }),
-    staleTime: 1000 * 60 * 60 * 12, //12 hours 
-    cacheTime: 1000 * 60 * 60 * 12, //12 hours 
-  });
+export default function ContentPicks({ state, onPageChange }) {
+  const [tab, setTab] = useState(PICKS_TABS[0]);
+  const [pnum, setPnum] = useState(0);
+  const handleTabChange = (value) => { 
+    setTab(value); 
+    localStorage.setItem('picks-tab', value); 
+    onPageChange("Picks " + (PICKS_TABS.indexOf(value)+1) ); 
+  };
+  useEffect(() => {
+    const storedTab = localStorage.getItem('picks-tab');
+    if (storedTab) { setTab(storedTab); onPageChange("Picks " + (PICKS_TABS.indexOf(storedTab)+1) ); }
+    const storedPnum = localStorage.getItem('panels-number');
+    if (storedPnum) { setPnum(storedPnum); }
+    return () => {};
+  }, []);
 
-  let picksContent;
-  if (isPending) { picksContent = <LoadingIndicator />; }
-  if (isError) {
-    picksContent = (
-      <ErrorBlock title="An error occurred" message={error.info?.message || 'Failed to fetch picks data.'} />
-    );
+  const [dtFrom, setDtFrom] = useState(new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000));
+  const handleFromChange = (date) => { setDtFrom(date); };
+  const [dtTo, setDtTo] = useState(new Date());
+  const handleToChange = (date) => { setDtTo(date); };
+
+  function handlePnumChange(value) {
+    localStorage.setItem('panels-number', value);
+    setPnum(value);
   }
-  if (picksData) {
-    picksContent = (<table className="min-w-full divide-y divide-gray-300">
-    <thead className="bg-gray-50">
-      <tr>
-        <th colSpan="4" scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-        {picksData && picksData.length} Picks for: <select value={currentMonth} onChange={handleMonthChange}>
-            <option value="1">January</option>
-            <option value="2">Febrary</option>
-            <option value="3">March</option>
-            <option value="4">April</option>
-            <option value="5">May</option>
-            <option value="6">June</option>
-            <option value="7">July</option>
-            <option value="8">August</option>
-            <option value="9">September</option>
-            <option value="10">October</option>
-            <option value="11">November</option>
-            <option value="12">December</option>
-          </select>
-        </th>
-        <th colSpan="3" scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-          Picks as of: <DatePicker
-            selected={maxDate}
-            onChange={handleDateChange}
-            //dateFormat="yyyy-MM-dd" // Customize date format if needed
-          />
-        </th>
-      </tr>
-      <tr>
-        <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-          Date
-        </th>
-        <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-          Q
-        </th>
-        <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-          Num
-        </th>
-        <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-          M/P
-        </th>
-        <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-          Squiqqly
-        </th>
-        <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-          Scramble
-        </th>
-        <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-          Calendar
-        </th>
-      </tr>
-    </thead><tbody className="divide-y divide-gray-200 bg-white">
-    {picksData.map((pick) => (
-      <tr key={pick.Calendar}>
-        <td className="whitespace-nowrap py-1 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-          {pick.Day}
-        </td>
-        <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{pick.Q}</td>
-        <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{pick.Num}</td>
-        <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{pick.Magic}</td>
-        <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{pick.Squiggly}</td>
-        <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{pick.Scramble}</td>
-        <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500"><a href={pick.Calendar}>Add to Calendar</a></td>
-      </tr>
-    ))}
-  </tbody></table>);
-  }
+  const numberBox = (
+    <div className="mb-2 mt-2 flex flex-wrap gap-2 w-fit max-w-sm p-4 mx-auto rounded shadow-md bg-gradient-to-b from-stone-500 to-stone-800">
+      <div className="mt-2">
+        <span className="px-4 py-2 font-semibold uppercase rounded text-stone-900 bg-amber-400 hover:bg-amber-500">
+          Panel
+        </span>
+      </div>
+      <div className="w-20">
+        <input className='w-full px-3 py-2 leading-tight border rounded shadow text-gray-700 bg-stone-100' 
+          type="number" min="0" max="999" step="10" value={pnum} 
+          onChange={(event) => handlePnumChange(event.target.value)} />
+      </div>
+    </div>
+  );
+
+  const drawsContent = () => {
+    switch (tab) {
+      case PICKS_TABS[0]:
+        return <div>Daily Picks</div>;
+      case PICKS_TABS[1]:
+        return <div>Monthly Picks</div>;
+      default:
+        return <div>Panel Not Found</div>;
+    }
+  };
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
-      <div className="mt-0 flow-root">
-        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-              {picksContent}
+  <div className="px-4 sm:px-6 lg:px-8">
+    <div className="mt-0 flow-root">
+      <div className="-mx-4 -my-2 sm:-mx-6 lg:-mx-8">
+        <div className="inline-block min-w-full py-2 align-middle grid">
+          <div className="flex">
+            <div className="grid grid-cols-1 justify-items-center">
+              <div className="rounded-lg overflow-hidden shadow-lg">
+                <table className="divide-y divide-gray-300">
+                  <thead className="bg-gray-200">
+                    <tr>
+                      <th className="pt-2">
+                        <div className="flex justify-center items-center">
+                          <Tabs onTabChange={handleTabChange} selectedTab={tab} tabList={PICKS_TABS} />
+                        </div>
+                      </th>
+                    </tr>
+                    <tr>
+                      <th>
+                        { tab==PICKS_TABS[0] && <div className='p-4 nowrap'>
+                          From: <DatePicker className='w-28 mr-2' selected={dtFrom} onChange={handleFromChange} />
+                          To: <DatePicker className='w-28 mr-2' selected={dtTo} onChange={handleToChange} />
+                        </div>}
+                        { tab!==PICKS_TABS[0] && numberBox }
+                      </th>
+                    </tr>
+                  </thead>
+                </table>
+              </div>
+              <div>{drawsContent()}</div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  </div>
+)
 }

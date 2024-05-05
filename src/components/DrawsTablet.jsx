@@ -2,6 +2,8 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchData } from '../util/http.js';
 import LoadingIndicator from './UI/LoadingIndicator.jsx';
 import ErrorBlock from './UI/ErrorBlock.jsx';
+import SvgEve from './SvgEve.jsx';
+import SvgMid from './SvgMid.jsx';
 
 export default function DrawsTablet({state, num}) {
   const dateOptions = { month: 'numeric', day: 'numeric', year: 'numeric' };
@@ -33,34 +35,34 @@ export default function DrawsTablet({state, num}) {
               <span className="bg-gray-900 w-6 h-6 flex items-center justify-center rounded-full text-white font-bold text-xs shadow-md">
                 {tabletData.filter(d => d.Me === "M").length}
               </span> 
-              <span className='ml-1'>Nums</span>
+              <span className='ml-1'>Draws</span>
             </span>
           </th>
           <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
             Date
           </th>
           <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-            Mid
+            <span><SvgMid /> Mid</span>
           </th>
           <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
             <span className="flex items-center">
               <span className="bg-gray-900 w-6 h-6 flex items-center justify-center rounded-full text-white font-bold text-xs shadow-md">
                 {tabletData.filter(d => d.Me === "E").length}
               </span> 
-              <span className='ml-1'>Nums</span>
+              <span className='ml-1'>Draws</span>
             </span>
           </th>
           <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
             Date
           </th>
           <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-            Eve
+            <span><SvgEve /> Eve</span>
           </th>
         </tr>
       </thead>
       <tbody className="divide-y divide-gray-200 bg-white">
         {tabletData.map((d) => (
-          <tr key={d.Num + d.Date}>
+          <tr key={"dtblt-tr-"+d.Num + d.Dt}>
             {d.Me === "E" && <><td /><td /><td /></> }
             <td 
             className={classNames(
@@ -70,7 +72,10 @@ export default function DrawsTablet({state, num}) {
               {d.Num}
             </td>
             <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{new Date(d.Dt).toLocaleDateString('en-US', dateOptions)}</td>
-            <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{d.Me}</td>
+            <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
+              {d.Me=="M" && <span><SvgMid /> Mid</span>}
+              {d.Me=="E" && <span><SvgEve /> Eve</span>}
+            </td>
             {d.Me === "M" && <><td /><td /><td /></> }
           </tr>
         ))}
@@ -103,7 +108,7 @@ export default function DrawsTablet({state, num}) {
           <span className="bg-gray-900 w-6 h-6 flex items-center justify-center rounded-full text-white font-bold text-xs shadow-md">
             {historyData.length}
           </span> 
-          <span className='ml-1'>Nums</span>
+          <span className='ml-1'>Draws</span>
         </span>
       </th>
       <th colSpan={2} scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
@@ -115,8 +120,8 @@ export default function DrawsTablet({state, num}) {
     </tr>
   </thead>
   <tbody className="divide-y divide-gray-200 bg-white">
-    {historyData.map((h) => (
-      <tr key={h.Num + h.Date}>
+    {historyData.map((h, index) => (
+      <tr key={"dtblt-hist-"+h.Num + h.Dt + index}>
         <td colSpan={2}></td>
         <td className='whitespace-nowrap py-1 pr-3 text-sm font-medium text-gray-900'>
           {h.Num}

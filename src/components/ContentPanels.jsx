@@ -91,7 +91,9 @@ export default function ContentPanels({ state, onPageChange }) {
                     <tr>
                       <th>
                         { ptab!==PANELS_TABS[0] && numberBox }
-                        { ptab==PANELS_TABS[0] && <DatePicker selected={dtPanel} onChange={handleDtPanelChange} /> }
+                        { ptab==PANELS_TABS[0] && <div className='p-5'>
+                        As of: <DatePicker className='w-28' selected={dtPanel} onChange={handleDtPanelChange} />
+                        </div> }
                       </th>
                     </tr>
                   </thead>

@@ -51,7 +51,7 @@ export default function App() {
             <Tabs onTabChange={handleTabChange} selectedTab={tab} tabList={DEFAULT_TABS} />
             { tab==='Panels' && <ContentPanels onPageChange={handlePageChange} state={state} /> }
             { tab==='Draws' && <ContentDraws onPageChange={handlePageChange} state={state} /> }
-            { tab==='Picks' && <ContentPicks state={state} num={num} /> }
+            { tab==='Picks' && <ContentPicks onPageChange={handlePageChange} state={state} /> }
             { tab==='Scoreboard' && <ContentScoreboard onPageChange={handlePageChange} state={state} /> }
           </main>
         }

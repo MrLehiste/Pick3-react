@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
 import Tabs from './Tabs.jsx';
+import DatePicker from "react-datepicker";
+import 'react-datepicker/dist/react-datepicker.css';
 import DrawsTablet from './DrawsTablet.jsx';
 import DrawsScramble from './DrawsScramble.jsx';
+import DrawsHistory from './DrawsHistory.jsx';
 
 const DRAWS_TABS = ['History', 'Tablet', 'Scramble'];
 
@@ -20,6 +23,11 @@ export default function ContentDraws({ state, onPageChange }) {
     if (storedPnum) { setPnum(storedPnum); }
     return () => {};
   }, []);
+
+  const [dtFrom, setDtFrom] = useState(new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000));
+  const handleFromChange = (date) => { setDtFrom(date); };
+  const [dtTo, setDtTo] = useState(new Date());
+  const handleToChange = (date) => { setDtTo(date); };
 
   function handlePnumChange(value) {
     localStorage.setItem('draws-number', value);
@@ -43,7 +51,7 @@ export default function ContentDraws({ state, onPageChange }) {
   const drawsContent = () => {
     switch (tab) {
       case DRAWS_TABS[0]:
-        return <div>HISTORY</div>;
+        return <DrawsHistory state={state} dtFrom={dtFrom} dtTo={dtTo} />;
       case DRAWS_TABS[1]:
         return <DrawsTablet state={state} num={pnum} />;
       case DRAWS_TABS[2]:
@@ -71,7 +79,13 @@ export default function ContentDraws({ state, onPageChange }) {
                       </th>
                     </tr>
                     <tr>
-                      <th>{ tab!==DRAWS_TABS[0] && numberBox }</th>
+                      <th>
+                        { tab!==DRAWS_TABS[0] && numberBox }
+                        { tab==DRAWS_TABS[0] && <div className='p-4 nowrap'>
+                          From: <DatePicker className='w-28 mr-2' selected={dtFrom} onChange={handleFromChange} />
+                          To: <DatePicker className='w-28 mr-2' selected={dtTo} onChange={handleToChange} />
+                        </div>}
+                      </th>
                     </tr>
                   </thead>
                 </table>

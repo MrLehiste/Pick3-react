@@ -1,8 +1,9 @@
 import React from 'react';
+import { classNames } from './UI/constants';
 
-const SvgEve = () => {
+const SvgEve = ({ color }) => {
   return (
-    <svg className="svg-inline--fa fa-moon text-green-500 fa-fw" 
+    <svg className={classNames(color || "text-gray-900", "svg-inline--fa fa-moon fa-fw")} 
     aria-labelledby="svg-inline--fa-title-Z1BZ5XMtygtd" 
     data-prefix="fas" 
     data-icon="moon" 

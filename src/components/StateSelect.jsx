@@ -93,8 +93,8 @@ export default function StateSelect({ selectedState, onStateChange, onDataLoaded
     lastDraws.map((item, index) => (
       <div className="mb-1" key={index}>
           <span className="text-stone-800 font-semibold">
-          { item['Me']==='M' && <SvgMid /> }
-          { item['Me']==='E' && <SvgEve /> } 
+          { item['Me']==='M' && <SvgMid color="text-green-500" /> }
+          { item['Me']==='E' && <SvgEve color="text-green-500" /> } 
           {new Date(item['Date']).toLocaleDateString('en-US', dateOptions)} </span>
           <ul className="ml-2 game-numbers game-numbers--pick3" aria-label="Pick 3 Winning Numbers">
               <li className="game-numbers__number"><span>{item['Num'][0]}</span></li>
