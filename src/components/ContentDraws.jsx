@@ -5,6 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import DrawsTablet from './DrawsTablet.jsx';
 import DrawsScramble from './DrawsScramble.jsx';
 import DrawsHistory from './DrawsHistory.jsx';
+import { DATE_OPT_MDY4 } from './UI/constants.js';
 
 const DRAWS_TABS = ['History', 'Tablet', 'Scramble'];
 
@@ -25,9 +26,9 @@ export default function ContentDraws({ state, onPageChange }) {
   }, []);
 
   const [dtFrom, setDtFrom] = useState(new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000));
-  const handleFromChange = (date) => { setDtFrom(date); };
-  const [dtTo, setDtTo] = useState(new Date());
-  const handleToChange = (date) => { setDtTo(date); };
+  const handleFromChange = (date) => { setDtFrom(new Date(date).toLocaleDateString('en-US', DATE_OPT_MDY4)); };
+  const [dtTo, setDtTo] = useState(new Date().toLocaleDateString('en-US', DATE_OPT_MDY4));
+  const handleToChange = (date) => { setDtTo(new Date(date).toLocaleDateString('en-US', DATE_OPT_MDY4)); };
 
   function handlePnumChange(value) {
     localStorage.setItem('draws-number', value);

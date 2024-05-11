@@ -17,11 +17,16 @@ export default function App() {
   const [state, setState] = useState(DEFAULT_STATE);
   const [dataAvailable, setDataAvailable] = useState(false);
   const handleStateChange = (value) => { setState(value); localStorage.setItem('state', value); console.log('State changed', value); };
-  const handleDataLoaded = () => { setDataAvailable(true); console.log('Data Loaded', state); };
+  const handleDataLoaded = () => { 
+    setDataAvailable(true); 
+    console.log('Data Loaded', state); 
+    const storedPage = localStorage.getItem('page-number');
+    if (storedPage) { setPage(storedPage); }
+  };
   const handleDataUpdated = () => { queryClient.invalidateQueries({ queryKey: [state] }); console.log('Data Updated', state); };
   
   const [num, setNum] = useState(0);
-  const [page, setPage] = useState("Page 0");
+  const [page, setPage] = useState("Loading ...");
   useEffect(() => {
     const storedState = localStorage.getItem('state');
     if (storedState) { setState(storedState); }
@@ -29,8 +34,6 @@ export default function App() {
     if (storedValue) { setNum(storedValue); }
     const storedTab = localStorage.getItem('tab');
     if (storedTab) { setTab(storedTab); }
-    const storedPage = localStorage.getItem('page-number');
-    if (storedPage) { setPage(storedPage); }
     return () => {};
   }, []);
   const handleNumChange = (value) => { setNum(value); console.log('Num changed', value); };

@@ -158,7 +158,7 @@ export default function ContentScoreboard({ state, onPageChange }) {
       resultsTable = (<table className="block min-w-full divide-y divide-gray-300 border-separate border-spacing-0">
         <thead className="bg-gray-50">
           <tr>
-            <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+            <th scope="col" className="sticky top-0 z-10 bg-yellow-100 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
               <span className="flex items-center">
                 <span className="bg-gray-900 w-7 h-7 flex items-center justify-center rounded-full text-white font-bold text-xs shadow-md">
                   {qData.length}
@@ -166,11 +166,14 @@ export default function ContentScoreboard({ state, onPageChange }) {
                 <span className='ml-1'>Draws</span>
               </span>
             </th>
-            <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+            <th scope="col" className="sticky top-0 z-10 bg-yellow-100 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
               <span className='magic-box p-1'>{qData.filter(q => q.Magic).length} Magics</span>
             </th>
-            <th scope="col" colSpan={2} className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+            <th scope="col" colSpan={2} className="sticky top-0 z-10 bg-yellow-100 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
               <span className='trident-box p-1'>{qData.filter(q => q.Sq3).length} Tidents €</span>
+            </th>
+            <th scope="col" colSpan={1} className="sticky top-0 z-10 bg-yellow-100 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+              <span className='pick-box p-1'>{qData.filter(q => q.Pick).length} Picks</span>
             </th>
           </tr>
         </thead>
@@ -190,6 +193,9 @@ export default function ContentScoreboard({ state, onPageChange }) {
               </td>
               <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500 text-left">
                 {d.Squiggly}
+              </td>
+              <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500 text-left">
+                {d.Pick ? <span className='pick-box p-1 font-bold'>{d.Pick}</span> : "Not in casino"}
               </td>
             </tr>
           )})}

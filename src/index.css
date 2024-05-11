@@ -30,6 +30,11 @@ body {
   border-image: repeating-linear-gradient( 45deg, pink, pink 1%, blue 1%, blue 8%) 10;
 }
 
+.pick-box {
+  border: 5px solid orange;
+  border-image: repeating-linear-gradient( 45deg, pink, pink 1%, orange 1%, orange 8%) 10;
+}
+
 .hypnotic-circle{
   background-color: #fcfcfc;
   opacity: 0.7;
