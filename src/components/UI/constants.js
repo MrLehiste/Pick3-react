@@ -2,6 +2,7 @@ export function classNames(...classes) { return classes.filter(Boolean).join(' '
 export const DATE_OPT_MDY4 = { month: 'numeric', day: 'numeric', year: 'numeric' };
 export const DATE_OPT_MDY2 = { month: 'numeric', day: 'numeric', year: '2-digit' };
 export const DATE_OPT_MD = { month: 'numeric', day: 'numeric' };
+export const DATE_OPT_DAY_LONG = { weekday: 'long' };
 export const HEADER_MONTHS = [
   { nam: 'Jan', name: 'January', number: 1 },
   { nam: 'Feb', name: 'February', number: 2 },

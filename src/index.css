@@ -11,8 +11,8 @@ body {
 }
 
 .magic-box {
-  border: 5px solid pink;
-  border-image: repeating-linear-gradient( 45deg, pink, pink 1%, purple 1%, purple 8%) 10;
+  border: 5px solid black;
+  border-image: repeating-linear-gradient( 45deg, black, black 1%, black 1%, black 8%) 10;
 }
 
 .magic-box:hover {

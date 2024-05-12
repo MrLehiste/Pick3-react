@@ -185,7 +185,7 @@ export default function ContentScoreboard({ state, onPageChange }) {
               <td className="whitespace-nowrap py-1 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 text-right">
                 {new Date(d.Dtm).toLocaleDateString('en-US', dateOptions2)}
               </td>
-              <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500 text-center">
+              <td className="whitespace-nowrap mb-5 px-3 py-1 text-sm text-gray-500 text-center">
                 <span className={cBox}>{d.Num} {new Date(d.Dtm).getHours() == 12 ? "M" : "E"}</span>
               </td>
               <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500 text-right">
