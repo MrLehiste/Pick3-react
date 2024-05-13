@@ -42,6 +42,8 @@ export default function ContentScoreboard({ state, onPageChange }) {
     for (let year = dtTo.getFullYear(); year >= dtFrom.getFullYear(); year--) { y.push(year); }
     setYears(y);
   }, [state, dtFrom, dtTo]);
+  const [magic, setMagic] = useState(true);
+  const handleMagicToggle = () => { setMagic(prevMagic => !prevMagic); };
   const [enabledQs, setEnabledQs] = useState([true, true, true, true, true, true]);
   const updateQ = (index) => {
     setEnabledQs((prevQs) => {
@@ -70,7 +72,7 @@ export default function ContentScoreboard({ state, onPageChange }) {
     );
   }
   if (data) {
-    const qData = data.filter(x => Q_MAP.filter((_, index) => enabledQs[index]).map(eq => eq.q1).includes(x.Q11));
+    const qData = data.filter(d => magic ? d.Magic || d.Sq3 : d).filter(x => Q_MAP.filter((_, index) => enabledQs[index]).map(eq => eq.q1).includes(x.Q11));
     const dotPlotFooter = (tab == SCORE_TABS[0] || tab == SCORE_TABS[2] || tab == SCORE_TABS[3]) ? (<tfoot>
       <tr>
         <th scope="col" className="rounded-bl-lg sticky top-0 left-0 z-9 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8">
@@ -165,14 +167,14 @@ export default function ContentScoreboard({ state, onPageChange }) {
                 <span className="bg-gray-900 w-7 h-7 flex items-center justify-center rounded-full text-white font-bold text-xs shadow-md">
                   {qData.length}
                 </span>
-                <span className='ml-1'>Draws</span>
+                <span className='ml-1'>Hits</span>
               </span>
             </th>
             <th scope="col" className="sticky top-0 z-10 bg-yellow-100 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
               <span className='magic-box p-1'>{qData.filter(q => q.Magic).length} Magics</span>
             </th>
             <th scope="col" colSpan={2} className="sticky top-0 z-10 bg-yellow-100 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-              <span className='trident-box p-1'>{qData.filter(q => q.Sq3).length} Tidents €</span>
+              <span className='trident-box p-1'>{qData.filter(q => q.Sq3).length} Tridents €</span>
             </th>
             <th scope="col" colSpan={1} className="sticky top-0 z-10 bg-yellow-100 px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
               <span className='pick-box p-1'>{qData.filter(q => q.Pick).length} Picks</span>
@@ -348,10 +350,16 @@ export default function ContentScoreboard({ state, onPageChange }) {
   const qRow = data && (tab !== SCORE_TABS[4]) ? (<tr>
     <th colSpan="2" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
       <div className="flex justify-center items-center">
+      <div className='grid place-items-center'>
+        <div onClick={handleMagicToggle} className={classNames(magic ? "bg-gray-900 text-white" : "bg-white text-gray-900", "ml-5 w-10 h-10 flex items-center justify-center rounded-full text-black font-bold text-lg shadow-md")}>
+          {data.filter(d => magic ? d.Magic || d.Sq3 : d).filter(x => Q_MAP.filter((_, index) => enabledQs[index]).map(eq => eq.q1).includes(x.Q11)).length} 
+        </div>
+        <span className='pl-4'>{magic ? "Magic/Tri€" : "All Hits"}</span>
+      </div>
       {Q_MAP.map((q, i) => (
       <div key={'qlist-top'+q.q} className='grid place-items-center'>
         <div onClick={() => updateQ(i)} key={'qlist-'+q.q} className={classNames(enabledQs[i] ? q.bg : "bg-white", "ml-5 w-10 h-10 flex items-center justify-center rounded-full text-black font-bold text-lg shadow-md")}>
-          {enabledQs[i] ? data.filter(d => d.Q11 == q.q1).length : q.q} </div>
+          {enabledQs[i] ? data.filter(d => magic ? d.Magic || d.Sq3 : d).filter(d => d.Q11 == q.q1).length : q.q} </div>
           {enabledQs[i] && <span className='pl-4'>{q.q}</span>}
       </div>
       ))}
