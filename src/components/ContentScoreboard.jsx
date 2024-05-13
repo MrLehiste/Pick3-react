@@ -7,6 +7,8 @@ import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
 import Tabs from './Tabs.jsx';
 import { HEADER_MONTHS, Q_MAP, MAGIC_INTERVAL } from './UI/constants';
+import SvgEve from './SvgEve.jsx';
+import SvgMid from './SvgMid.jsx';
 
 const INIT_FROM = new Date(2019, 0, 1);
 const INIT_TO = new Date();
@@ -129,7 +131,7 @@ export default function ContentScoreboard({ state, onPageChange }) {
                   return(
                   <div key={'td1-span-'+month.name+'-'+year+x+i} className={classNames(cBox, "p-1")}>
                     {/* {JSON.stringify(x)} */}
-                    {new Date(x.Dtm).toLocaleDateString('en-US', dateOptions)} {x.Num}
+                    {new Date(x.Dtm).toLocaleDateString('en-US', dateOptions)} {x.Num} {new Date(x.Dtm).getHours() == 12 ? <span><SvgMid color="text-orange-500" /></span> : <span><SvgEve /></span>}
                     <span className="flex items-center">
                       <span className={classNames(ballColor, "w-5 h-5 flex items-center justify-center rounded-full text-white font-bold text-xs shadow-md")}>
                         {x.Qdbl}
@@ -155,7 +157,7 @@ export default function ContentScoreboard({ state, onPageChange }) {
       {dotPlotFooter}
     </table>);
     if(tab == SCORE_TABS[1]) {
-      resultsTable = (<table className="block min-w-full divide-y divide-gray-300 border-separate border-spacing-0">
+      resultsTable = (<table className="table-auto block min-w-full divide-y divide-gray-300 border-separate border-spacing-0">
         <thead className="bg-gray-50">
           <tr>
             <th scope="col" className="sticky top-0 z-10 bg-yellow-100 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
@@ -177,16 +179,16 @@ export default function ContentScoreboard({ state, onPageChange }) {
             </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-200 bg-white">
+        <tbody className="divide-y divide-gray-200 bg-white space-y-10">
           {qData.map((d) => {
-            const cBox = d.Magic ? "magic-box p-1" : (d.Sq3 ? "trident-box p-1" : "");
+            const cBox = d.Magic ? "magic-box pl-1 pr-1" : (d.Sq3 ? "trident-box pl-1 pr-1" : "");
             return(
-            <tr key={d.Num + d.Dtm} className={cBox}>
+            <tr key={d.Num + d.Dtm} className="">
               <td className="whitespace-nowrap py-1 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 text-right">
                 {new Date(d.Dtm).toLocaleDateString('en-US', dateOptions2)}
               </td>
-              <td className="whitespace-nowrap mb-5 px-3 py-1 text-sm text-gray-500 text-center">
-                <span className={cBox}>{d.Num} {new Date(d.Dtm).getHours() == 12 ? "M" : "E"}</span>
+              <td className="whitespace-nowrap m-5 px-3 py-1 text-sm text-gray-500 text-center">
+                <span className={cBox}>{d.Num} {new Date(d.Dtm).getHours() == 12 ? <span><SvgMid /> Mid</span> : <span><SvgEve /> Eve</span>}</span>
               </td>
               <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500 text-right">
                 {new Date(d.Dtm1).toLocaleDateString('en-US', dateOptions2)}
@@ -195,7 +197,7 @@ export default function ContentScoreboard({ state, onPageChange }) {
                 {d.Squiggly}
               </td>
               <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500 text-left">
-                {d.Pick ? <span className='pick-box p-1 font-bold'>{d.Pick}</span> : "Not in casino"}
+                {d.Pick ? <span className='pick-box pl-1 pr-1 font-bold'>{d.Pick}</span> : "Not in casino"}
               </td>
             </tr>
           )})}
