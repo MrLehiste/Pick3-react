@@ -69,7 +69,7 @@ export default function StateSelect({ selectedState, onStateChange, onDataLoaded
           setDataLoaded(true);
           onDataLoaded();
           console.log(data[0].Date, dateAge(data[0].Date));
-          if(dateAge(data[0].Date) > (selectedState=="fl" ? 2 : 1)) handleUpdateDraws();
+          if(dateAge(data[0].Date) > (selectedState=="fl" ? 2 : 2)) handleUpdateDraws();
         })
         .catch(error => {
           console.error('There was a problem fetching the data:', error);
