@@ -1,60 +1,144 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { fetchData } from '../util/http.js';
 import Tabs from './Tabs.jsx';
+import LoadingIndicator from './UI/LoadingIndicator.jsx';
+import ErrorBlock from './UI/ErrorBlock.jsx';
 import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
+import { DATE_OPT_MDY4, DATE_OPT_DAY_LONG, DATE_OPT_MONTH_LONG, classNames } from './UI/constants';
 
-const PICKS_TABS = ['Daily Picks', 'Monthly Picks'];
+const MONTH_1 = new Date(new Date().setMonth(new Date().getMonth() - 1));
+const MONTH_2 = new Date(new Date().setMonth(new Date().getMonth() - 2));
+const PICKS_TABS = ["Today's Picks"
+  , MONTH_1.toLocaleDateString('en-US', DATE_OPT_MONTH_LONG)+' Picks'
+  , MONTH_2.toLocaleDateString('en-US', DATE_OPT_MONTH_LONG)+' Picks'];
 
 export default function ContentPicks({ state, onPageChange }) {
   const [tab, setTab] = useState(PICKS_TABS[0]);
-  const [pnum, setPnum] = useState(0);
   const handleTabChange = (value) => { 
     setTab(value); 
     localStorage.setItem('picks-tab', value); 
     onPageChange("Picks " + (PICKS_TABS.indexOf(value)+1) ); 
+    initDates(value);
   };
+  const initDates = (value) => {
+    switch(value){
+      case PICKS_TABS[0]:
+        setDtFrom(new Date().toLocaleDateString('en-US', DATE_OPT_MDY4));
+        setDtTo(new Date().toLocaleDateString('en-US', DATE_OPT_MDY4));
+        break;
+      case PICKS_TABS[1]:
+        MONTH_1.setDate(1);
+        setDtFrom(MONTH_1.toLocaleDateString('en-US', DATE_OPT_MDY4));
+        MONTH_1.setMonth(MONTH_1.getMonth() + 1);
+        MONTH_1.setDate(0);
+        setDtTo(MONTH_1.toLocaleDateString('en-US', DATE_OPT_MDY4));
+        break;
+      case PICKS_TABS[2]:
+        MONTH_2.setDate(1);
+        setDtFrom(MONTH_2.toLocaleDateString('en-US', DATE_OPT_MDY4));
+        MONTH_2.setMonth(MONTH_2.getMonth() + 1);
+        MONTH_2.setDate(0);
+        setDtTo(MONTH_2.toLocaleDateString('en-US', DATE_OPT_MDY4));
+        break;
+    }
+  }
   useEffect(() => {
     const storedTab = localStorage.getItem('picks-tab');
-    if (storedTab) { setTab(storedTab); onPageChange("Picks " + (PICKS_TABS.indexOf(storedTab)+1) ); }
-    const storedPnum = localStorage.getItem('panels-number');
-    if (storedPnum) { setPnum(storedPnum); }
+    if (storedTab && storedTab !== tab) { 
+      setTab(storedTab); 
+      onPageChange("Picks " + (PICKS_TABS.indexOf(storedTab)+1) ); 
+      initDates(storedTab);
+    }
     return () => {};
   }, []);
 
-  const [dtFrom, setDtFrom] = useState(new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000));
-  const handleFromChange = (date) => { setDtFrom(date); };
-  const [dtTo, setDtTo] = useState(new Date());
-  const handleToChange = (date) => { setDtTo(date); };
+  const [dtFrom, setDtFrom] = useState(new Date().toLocaleDateString('en-US', DATE_OPT_MDY4));
+  const handleFromChange = (date) => { setDtFrom(new Date(date).toLocaleDateString('en-US', DATE_OPT_MDY4)); };
+  const [dtTo, setDtTo] = useState(new Date().toLocaleDateString('en-US', DATE_OPT_MDY4));
+  const handleToChange = (date) => { setDtTo(new Date(date).toLocaleDateString('en-US', DATE_OPT_MDY4)); };
 
-  function handlePnumChange(value) {
-    localStorage.setItem('panels-number', value);
-    setPnum(value);
+  const picksUrl = import.meta.env.VITE_URL_PICKS + '&state='+state+'&dt1='+dtFrom+'&dt2='+dtTo;
+  const { data, isPending, isError, error } = useQuery({
+    queryKey: [state, 'picks', dtFrom, dtTo],
+    queryFn: ({ signal, queryKey }) => fetchData({ signal, url: picksUrl }),
+    staleTime: 1000 * 60 * 60 * 12, //12 hours 
+    cacheTime: 1000 * 60 * 60 * 12, //12 hours 
+  });
+
+  let resultsTable;
+  if (isPending) { resultsTable = <LoadingIndicator />; }
+  if (isError) {
+    resultsTable = (
+      <ErrorBlock title="An error occurred" message={error.info?.message || 'Failed to fetch scramble data.'} />
+    );
   }
-  const numberBox = (
-    <div className="mb-2 mt-2 flex flex-wrap gap-2 w-fit max-w-sm p-4 mx-auto rounded shadow-md bg-gradient-to-b from-stone-500 to-stone-800">
-      <div className="mt-2">
-        <span className="px-4 py-2 font-semibold uppercase rounded text-stone-900 bg-amber-400 hover:bg-amber-500">
-          Panel
-        </span>
-      </div>
-      <div className="w-20">
-        <input className='w-full px-3 py-2 leading-tight border rounded shadow text-gray-700 bg-stone-100' 
-          type="number" min="0" max="999" step="10" value={pnum} 
-          onChange={(event) => handlePnumChange(event.target.value)} />
-      </div>
-    </div>
-  );
-
-  const drawsContent = () => {
-    switch (tab) {
-      case PICKS_TABS[0]:
-        return <div>Daily Picks</div>;
-      case PICKS_TABS[1]:
-        return <div>Monthly Picks</div>;
-      default:
-        return <div>Panel Not Found</div>;
-    }
-  };
+  if (data) {
+    resultsTable = (<table className="min-w-full divide-y divide-gray-300">
+    <thead className="bg-gray-50">
+      <tr>
+        <th scope="col" colSpan={2} className="rounded-tl-lg py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+          <span className="flex items-center">
+            <span className="bg-gray-900 w-6 h-6 flex items-center justify-center rounded-full text-white font-bold text-xs shadow-md">
+              {data.length}
+            </span> 
+            <span className='ml-1'>Picks</span>
+          </span>
+        </th>
+        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+          Date
+        </th>
+        <th scope="col" colSpan={2} className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+          Permutation
+        </th>
+        <th scope="col" colSpan={2} className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+          Entry
+        </th>
+        <th scope="col" colSpan={2} className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+          Hit
+        </th>
+        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+          Pick
+        </th>
+        <th scope="col" className="rounded-tr-lg px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+          Calendar
+        </th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-gray-200 bg-white">
+      {data.map((d, index) => (
+        <tr key={"picks-tr-"+index}>
+          <td className={classNames( (index==data.length-1) ? "rounded-bl-lg " : "", "whitespace-nowrap py-1 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6")}>
+            {d.Num} 
+          </td>
+          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
+            {new Date(d.Dt).toLocaleDateString('en-US', DATE_OPT_DAY_LONG)}</td>
+          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
+            {new Date(d.Dt).toLocaleDateString('en-US', DATE_OPT_MDY4)}</td>
+          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{d.Permutation}</td>
+          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
+            {new Date(d.Pdtm).toLocaleDateString('en-US', DATE_OPT_MDY4)}</td>
+          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{d.Entry}</td>
+          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
+            {d.Entry && new Date(d.Edtm).toLocaleDateString('en-US', DATE_OPT_MDY4)}</td>
+          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{d.Hitnum}</td>
+          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
+            {d.Hitnum && <span className='pick-box p-1'>
+              {new Date(d.Hitdtm).toLocaleDateString('en-US', DATE_OPT_MDY4)}</span>}</td>
+          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
+            <span className={d.Magic ? "magic-box pr-1 pl-1" : d.Sq3 ? "trident-box pr-1 pl-1" : ""}>
+              {d.Q} {d.Num} {d.Squiggly}
+            </span>
+          </td>
+          <td className={classNames( (index==data.length-1) ? "rounded-br-lg " : "", "whitespace-nowrap px-3 py-1 text-sm text-gray-500")}>
+            <a href={d.Calendar} target='_blank'>Add to Calendar</a>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>);
+  }
 
   return (
   <div className="px-4 sm:px-6 lg:px-8">
@@ -75,17 +159,16 @@ export default function ContentPicks({ state, onPageChange }) {
                     </tr>
                     <tr>
                       <th>
-                        { tab==PICKS_TABS[0] && <div className='p-4 nowrap'>
+                        <div className='p-4 nowrap'>
                           From: <DatePicker className='w-28 mr-2' selected={dtFrom} onChange={handleFromChange} />
                           To: <DatePicker className='w-28 mr-2' selected={dtTo} onChange={handleToChange} />
-                        </div>}
-                        { tab!==PICKS_TABS[0] && numberBox }
+                        </div>
                       </th>
                     </tr>
                   </thead>
                 </table>
               </div>
-              <div>{drawsContent()}</div>
+              <div>{resultsTable}</div>
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query';
 import { fetchData } from '../util/http.js';
 import LoadingIndicator from './UI/LoadingIndicator.jsx';
 import ErrorBlock from './UI/ErrorBlock.jsx';
