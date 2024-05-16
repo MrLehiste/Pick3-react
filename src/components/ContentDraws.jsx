@@ -15,11 +15,11 @@ export default function ContentDraws({ state, onPageChange }) {
   const handleTabChange = (value) => { 
     setTab(value); 
     localStorage.setItem('draws-tab', value); 
-    onPageChange("Panels " + (DRAWS_TABS.indexOf(value)+1) ); 
+    onPageChange("4. Draws (" + (DRAWS_TABS.indexOf(value)+1)+")" ); 
   };
   useEffect(() => {
     const storedTab = localStorage.getItem('draws-tab');
-    if (storedTab) { setTab(storedTab); onPageChange("Draws " + (DRAWS_TABS.indexOf(storedTab)+1) ); }
+    if (storedTab) { setTab(storedTab); onPageChange("4. Draws (" + (DRAWS_TABS.indexOf(storedTab)+1)+")" ); }
     const storedPnum = localStorage.getItem('draws-number');
     if (storedPnum) { setPnum(storedPnum); }
     return () => {};

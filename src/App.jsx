@@ -10,7 +10,7 @@ import ContentDraws from './components/ContentDraws.jsx';
 import ContentScoreboard from './components/ContentScoreboard.jsx';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 const queryClient = new QueryClient();
-const DEFAULT_TABS = ['Panels', 'Draws', 'Picks', 'Scoreboard']
+const DEFAULT_TABS = ['1. Scoreboard', '2. Picks', '3. Panels', '4. Draws']
 const DEFAULT_STATE = "";
 
 export default function App() {
@@ -52,10 +52,10 @@ export default function App() {
         {dataAvailable &&
           <main className="flex flex-col items-center">
             <Tabs onTabChange={handleTabChange} selectedTab={tab} tabList={DEFAULT_TABS} />
-            { tab==='Panels' && <ContentPanels onPageChange={handlePageChange} state={state} /> }
-            { tab==='Draws' && <ContentDraws onPageChange={handlePageChange} state={state} /> }
-            { tab==='Picks' && <ContentPicks onPageChange={handlePageChange} state={state} /> }
-            { tab==='Scoreboard' && <ContentScoreboard onPageChange={handlePageChange} state={state} /> }
+            { tab===DEFAULT_TABS[0] && <ContentScoreboard onPageChange={handlePageChange} state={state} /> }
+            { tab===DEFAULT_TABS[1] && <ContentPicks onPageChange={handlePageChange} state={state} /> }
+            { tab===DEFAULT_TABS[2] && <ContentPanels onPageChange={handlePageChange} state={state} /> }
+            { tab===DEFAULT_TABS[3] && <ContentDraws onPageChange={handlePageChange} state={state} /> }
           </main>
         }
       </QueryClientProvider>

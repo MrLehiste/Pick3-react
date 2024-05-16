@@ -8,34 +8,52 @@ import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
 import { DATE_OPT_MDY4, DATE_OPT_DAY_LONG, DATE_OPT_MONTH_LONG, classNames } from './UI/constants';
 
-const MONTH_1 = new Date(new Date().setMonth(new Date().getMonth() - 1));
-const MONTH_2 = new Date(new Date().setMonth(new Date().getMonth() - 2));
-const PICKS_TABS = ["Today's Picks"
-  , MONTH_1.toLocaleDateString('en-US', DATE_OPT_MONTH_LONG)+' Picks'
-  , MONTH_2.toLocaleDateString('en-US', DATE_OPT_MONTH_LONG)+' Picks'];
+const MONTH_0 = new Date(new Date().setMonth(new Date().getMonth() - 1));
+const DAY_1 = new Date();
+const DAY_2 = new Date(new Date().setDate(new Date().getDate() + 1));
+const MONTH_1 = new Date();
+const MONTH_2 = new Date(new Date().setMonth(new Date().getMonth() + 1));
+const PICKS_TABS = [
+  MONTH_0.toLocaleDateString('en-US', DATE_OPT_MONTH_LONG)+"' Picks"
+  , "Today's Picks"
+  , "Tomorrow's Picks"
+  , MONTH_1.toLocaleDateString('en-US', DATE_OPT_MONTH_LONG)+"' Picks"
+  , MONTH_2.toLocaleDateString('en-US', DATE_OPT_MONTH_LONG)+"' Picks"];
 
 export default function ContentPicks({ state, onPageChange }) {
   const [tab, setTab] = useState(PICKS_TABS[0]);
   const handleTabChange = (value) => { 
     setTab(value); 
+    console.log("TAB", value);
     localStorage.setItem('picks-tab', value); 
-    onPageChange("Picks " + (PICKS_TABS.indexOf(value)+1) ); 
+    onPageChange("2. Picks (" + (PICKS_TABS.indexOf(value)+1)+")" ); 
     initDates(value);
   };
   const initDates = (value) => {
     switch(value){
       case PICKS_TABS[0]:
-        setDtFrom(new Date().toLocaleDateString('en-US', DATE_OPT_MDY4));
-        setDtTo(new Date().toLocaleDateString('en-US', DATE_OPT_MDY4));
+        MONTH_0.setDate(1);
+        setDtFrom(MONTH_0.toLocaleDateString('en-US', DATE_OPT_MDY4));
+        MONTH_0.setMonth(MONTH_0.getMonth() + 1);
+        MONTH_0.setDate(0);
+        setDtTo(MONTH_0.toLocaleDateString('en-US', DATE_OPT_MDY4));
         break;
       case PICKS_TABS[1]:
+        setDtFrom(DAY_1.toLocaleDateString('en-US', DATE_OPT_MDY4));
+        setDtTo(DAY_1.toLocaleDateString('en-US', DATE_OPT_MDY4));
+        break;
+      case PICKS_TABS[2]:
+        setDtFrom(DAY_2.toLocaleDateString('en-US', DATE_OPT_MDY4));
+        setDtTo(DAY_2.toLocaleDateString('en-US', DATE_OPT_MDY4));
+        break;
+      case PICKS_TABS[3]:
         MONTH_1.setDate(1);
         setDtFrom(MONTH_1.toLocaleDateString('en-US', DATE_OPT_MDY4));
         MONTH_1.setMonth(MONTH_1.getMonth() + 1);
         MONTH_1.setDate(0);
         setDtTo(MONTH_1.toLocaleDateString('en-US', DATE_OPT_MDY4));
         break;
-      case PICKS_TABS[2]:
+      case PICKS_TABS[4]:
         MONTH_2.setDate(1);
         setDtFrom(MONTH_2.toLocaleDateString('en-US', DATE_OPT_MDY4));
         MONTH_2.setMonth(MONTH_2.getMonth() + 1);
@@ -48,7 +66,7 @@ export default function ContentPicks({ state, onPageChange }) {
     const storedTab = localStorage.getItem('picks-tab');
     if (storedTab && storedTab !== tab) { 
       setTab(storedTab); 
-      onPageChange("Picks " + (PICKS_TABS.indexOf(storedTab)+1) ); 
+      onPageChange("2. Picks (" + (PICKS_TABS.indexOf(storedTab)+1)+")" ); 
       initDates(storedTab);
     }
     return () => {};

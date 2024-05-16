@@ -21,12 +21,12 @@ export default function ContentScoreboard({ state, onPageChange }) {
   function classNames(...classes) { return classes.filter(Boolean).join(' '); }
   const SCORE_TABS = ['Horizontal ==', 'Vertical ||', 'Days Dot Plot', 'Years Dot Plot', 'Magic Interval'];
   const [tab, setTab] = useState(SCORE_TABS[0]);
-  const handleTabChange = (value) => { setTab(value); localStorage.setItem('score-tab', value); onPageChange("Scoreboard " + (SCORE_TABS.indexOf(value)+1) ); };
+  const handleTabChange = (value) => { setTab(value); localStorage.setItem('score-tab', value); onPageChange("1. Scoreboard (" + (SCORE_TABS.indexOf(value)+1)+")" ); };
   const [dtFrom, setDtFrom] = useState(INIT_FROM);
   const handleFromChange = (date) => { setDtFrom(date); localStorage.setItem('score-from', date); };
   useEffect(() => {
     const storedTab = localStorage.getItem('score-tab');
-    if (storedTab) { setTab(storedTab); onPageChange("Scoreboard " + (SCORE_TABS.indexOf(storedTab)+1) ); }
+    if (storedTab) { setTab(storedTab); onPageChange("1. Scoreboard (" + (SCORE_TABS.indexOf(storedTab)+1)+")" ); }
     const storedDtFrom = localStorage.getItem('score-from');
     if (storedDtFrom) { setDtFrom(new Date(storedDtFrom)); }
     const storedQs = localStorage.getItem('score-qs');
