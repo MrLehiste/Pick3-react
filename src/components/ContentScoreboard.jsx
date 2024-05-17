@@ -21,12 +21,12 @@ export default function ContentScoreboard({ state, onPageChange }) {
   function classNames(...classes) { return classes.filter(Boolean).join(' '); }
   const SCORE_TABS = ['Horizontal ==', 'Vertical ||', 'Days Dot Plot', 'Years Dot Plot', 'Magic Interval'];
   const [tab, setTab] = useState(SCORE_TABS[0]);
-  const handleTabChange = (value) => { setTab(value); localStorage.setItem('score-tab', value); onPageChange("1. Scoreboard (" + (SCORE_TABS.indexOf(value)+1)+")" ); };
+  const handleTabChange = (value) => { setTab(value); localStorage.setItem('score-tab', value); onPageChange("1. Scoreboard" ); };
   const [dtFrom, setDtFrom] = useState(INIT_FROM);
   const handleFromChange = (date) => { setDtFrom(date); localStorage.setItem('score-from', date); };
   useEffect(() => {
     const storedTab = localStorage.getItem('score-tab');
-    if (storedTab) { setTab(storedTab); onPageChange("1. Scoreboard (" + (SCORE_TABS.indexOf(storedTab)+1)+")" ); }
+    if (storedTab) { setTab(storedTab); onPageChange("1. Scoreboard" ); }
     const storedDtFrom = localStorage.getItem('score-from');
     if (storedDtFrom) { setDtFrom(new Date(storedDtFrom)); }
     const storedQs = localStorage.getItem('score-qs');
@@ -118,7 +118,7 @@ export default function ContentScoreboard({ state, onPageChange }) {
       <tbody>
         {years.map((year, index) => (
           <tr key={'yr-'+year}>
-            <td key={'td0-'+year} className='sticky left-0 z-11 border-b border-gray-200 bg-white whitespace-nowrap py-1 pl-3 pr-3 text-sm font-medium text-gray-900 sm:pl-3 lg:pl-3'>
+            <td key={'td0-'+year} className='sticky left-0 z-11 border-b border-gray-800 bg-white whitespace-nowrap py-1 pl-3 pr-3 text-sm font-medium text-gray-900 sm:pl-3 lg:pl-3'>
               {year}
             </td>
             {HEADER_MONTHS.map((month) => {
@@ -126,7 +126,7 @@ export default function ContentScoreboard({ state, onPageChange }) {
                 x => new Date(x.Dtm).getFullYear()==year && new Date(x.Dtm).getMonth()==month.number-1
               );
               return(
-              <td key={'td1-'+month.name+'-'+year} className={classNames('bg-white', 'border-b border-gray-200 whitespace-nowrap py-1 pl-1 pr-1 text-xs font-bold text-gray-900 sm:pl-1 lg:pl-1')}>
+              <td key={'td1-'+month.name+'-'+year} className={classNames('bg-white', 'border-b border-l border-gray-800 whitespace-nowrap py-1 pl-1 pr-1 text-xs font-bold text-gray-900 sm:pl-1 lg:pl-1')}>
                 {filterData.map((x, i) => {
                   const cBox = x.Magic ? "magic-box" : x.Sq3 ? "trident-box" : "";
                   const ballColor = Q_MAP.filter(q => q.q1 == x.Q11)[0].bg;
@@ -146,7 +146,7 @@ export default function ContentScoreboard({ state, onPageChange }) {
                 {/* {filterData.length == 0 && "EMPTY"} */}
               </td>
             )})}
-            <td className='border-b border-l border-gray-200 bg-white whitespace-nowrap py-1 pl-3 pr-3 text-sm font-medium text-gray-900 sm:pl-3 lg:pl-3'>
+            <td className='border-b border-l border-gray-800 bg-white whitespace-nowrap py-1 pl-3 pr-3 text-sm font-medium text-gray-900 sm:pl-3 lg:pl-3'>
               <div className='grid place-items-center'>
                 <div className="bg-gray-800 w-10 h-10 flex items-center justify-center rounded-full text-white font-bold text-lg shadow-md">
                   {qData.filter(x => new Date(x.Dtm).getFullYear()==year).length}

@@ -14,12 +14,12 @@ export default function ContentPanels({ state, onPageChange }) {
   const handleTabChange = (value) => { 
     setPtab(value); 
     localStorage.setItem('panels-tab', value); 
-    onPageChange("3. Panels (" + (PANELS_TABS.indexOf(value)+1)+")" ); 
+    onPageChange("3. Panels" ); 
   };
   const [pnum, setPnum] = useState(0);
   useEffect(() => {
     const storedTab = localStorage.getItem('panels-tab');
-    if (storedTab) { setPtab(storedTab); onPageChange("3. Panels (" + (PANELS_TABS.indexOf(storedTab)+1)+")" ); }
+    if (storedTab) { setPtab(storedTab); onPageChange("3. Panels"); }
     const storedPnum = localStorage.getItem('panels-number');
     if (storedPnum) { setPnum(storedPnum); }
     return () => {};

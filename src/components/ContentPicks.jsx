@@ -26,7 +26,7 @@ export default function ContentPicks({ state, onPageChange }) {
     setTab(value); 
     console.log("TAB", value);
     localStorage.setItem('picks-tab', value); 
-    onPageChange("2. Picks (" + (PICKS_TABS.indexOf(value)+1)+")" ); 
+    onPageChange("2. Picks" ); 
     initDates(value);
   };
   const initDates = (value) => {
@@ -66,7 +66,7 @@ export default function ContentPicks({ state, onPageChange }) {
     const storedTab = localStorage.getItem('picks-tab');
     if (storedTab && storedTab !== tab) { 
       setTab(storedTab); 
-      onPageChange("2. Picks (" + (PICKS_TABS.indexOf(storedTab)+1)+")" ); 
+      onPageChange("2. Picks" ); 
       initDates(storedTab);
     }
     return () => {};
