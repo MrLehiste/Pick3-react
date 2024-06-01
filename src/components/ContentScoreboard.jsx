@@ -42,7 +42,7 @@ export default function ContentScoreboard({ state, onPageChange }) {
     for (let year = dtTo.getFullYear(); year >= dtFrom.getFullYear(); year--) { y.push(year); }
     setYears(y);
   }, [state, dtFrom, dtTo]);
-  const [magic, setMagic] = useState(true);
+  const [magic, setMagic] = useState(false);
   const handleMagicToggle = () => { setMagic(prevMagic => !prevMagic); };
   const [enabledQs, setEnabledQs] = useState([true, true, true, true, true, true]);
   const updateQ = (index) => {
@@ -186,7 +186,7 @@ export default function ContentScoreboard({ state, onPageChange }) {
             const cBox = d.Magic ? "magic-box pl-1 pr-1" : (d.Sq3 ? "trident-box pl-1 pr-1" : "");
             return(
             <tr key={d.Num + d.Dtm} className="">
-              <td className="whitespace-nowrap py-1 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 text-right">
+              <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 text-right">
                 {new Date(d.Dtm).toLocaleDateString('en-US', dateOptions2)}
               </td>
               <td className="whitespace-nowrap m-5 px-3 py-1 text-sm text-gray-500 text-center">
@@ -304,6 +304,11 @@ export default function ContentScoreboard({ state, onPageChange }) {
     {dotPlotFooter}
     </table>);
     if(tab == SCORE_TABS[4]) {
+      const d0 = new Date(data.filter(x => x.Magic)[0].Dtm);
+      const d1 = new Date();
+      const addition = d1.getHours()==d0.getHours() ? 0 : d0.getHours()>d1.getHours() ? -1 : 1;
+      const lastMagic = Math.round((d1.setHours(0) - d0.setHours(0)) / (24 * 60 * 60 * 1000) * 2) + addition
+      console.log("lastMagic", lastMagic);
       const mData = data.filter(x => x.Magic).map((item, index, arr) => {
         if (index < arr.length - 1) {
           const d1 = new Date(item.Dtm);
@@ -322,17 +327,20 @@ export default function ContentScoreboard({ state, onPageChange }) {
       <tr>
         {MAGIC_INTERVAL.map((inter, index) => {
         return(
-          <th key={"mi4-header-"+inter.max} scope="col" className={classNames(index==0 ? "rounded-tl-lg" : index == MAGIC_INTERVAL.length -1 ? "rounded-tr-lg" : "", "sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center items-center justify-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter")}>
+        <th key={"mi4-header-"+inter.max} scope="col" className={classNames(index==0 ? "rounded-tl-lg" : index == MAGIC_INTERVAL.length -100 ? "rounded-tr-lg" : "", "sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center items-center justify-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter")}>
           {inter.text}
         </th>
         )})}
+        <th scope="col" className={classNames("rounded-tr-lg", "sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-center items-center justify-center text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter")}>
+          Last Magic
+        </th>
       </tr>
     </thead>
     <tbody>
       <tr>
         {MAGIC_INTERVAL.map((inter, index) => {
           return(
-          <td key={'mi4-td-'+inter.max} className={classNames(index==0 ? "rounded-bl-lg" : index == MAGIC_INTERVAL.length -1 ? "rounded-br-lg" : "", "align-top bg-white border-b border-l border-gray-200 py-1 pl-1 pr-1 text-xs font-bold text-gray-900 sm:pl-1 lg:pl-1")}>
+          <td key={'mi4-td-'+inter.max} className={classNames(index==0 ? "rounded-bl-lg" : index == MAGIC_INTERVAL.length -100 ? "rounded-br-lg" : "", "align-top bg-white border-b border-l border-gray-200 py-1 pl-1 pr-1 text-xs font-bold text-gray-900 sm:pl-1 lg:pl-1")}>
             <div className="grid grid-cols-1 place-items-center">
               {mData.filter(m => m.Interval >= inter.min && m.Interval <= inter.max).map((x, i) => (
                 <div key={'mi4-item-'+inter.max+x.D1} className="bg-gray-800 mb-1 w-12 h-12 flex items-center justify-center rounded-full text-white font-bold text-lg shadow-md">
@@ -341,6 +349,12 @@ export default function ContentScoreboard({ state, onPageChange }) {
             </div>
           </td>
         )})}
+        <td className={classNames("rounded-br-lg", "align-top bg-white border-b border-l border-gray-200 py-1 pl-1 pr-1 text-xs font-bold text-gray-900 sm:pl-1 lg:pl-1")}>
+          <div className="grid grid-cols-1 place-items-center">
+            <div className="bg-gray-200 mb-1 w-12 h-12 flex items-center justify-center rounded-full text-black font-bold text-lg shadow-md">
+              {lastMagic}</div>
+          </div>
+        </td>
       </tr>
     </tbody>
     </table>);

@@ -39,7 +39,7 @@ export default function PanelOpen({ state, dt, onPanelClick }) {
             <td key={'panelopen-td-'+month.number} className="align-top bg-white border-b border-l border-gray-200 py-1 pl-1 pr-1 text-xs font-bold text-gray-900 sm:pl-1 lg:pl-1">
                 <div className="grid grid-cols-1 place-items-center">
                 {data.filter(d => d.Mo == month.number).map(x => (
-                    <div key={'panelopen-item-'+month.number+x.Pnum} onClick={() => onPanelClick(x.Pnum)} className="bg-gray-800 mb-1 w-12 h-12 flex items-center justify-center rounded-full text-white font-bold text-lg shadow-md">
+                    <div key={'panelopen-item-'+month.number+x.Pnum} onClick={() => onPanelClick(x.Pnum)} className="cursor-pointer bg-gray-800 mb-1 w-12 h-12 flex items-center justify-center rounded-full text-white font-bold text-lg shadow-md">
                     {x.Pnum}</div>
                 ))}
                 </div>

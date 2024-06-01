@@ -109,6 +109,10 @@ export default function ContentPicks({ state, onPageChange }) {
     staleTime: 1000 * 60 * 60 * 12, //12 hours 
     cacheTime: 1000 * 60 * 60 * 12, //12 hours 
   });
+  const [highlightedRow, setHighlightedRow] = useState(null);
+  const handleRowClick = (index) => {
+    setHighlightedRow(index === highlightedRow ? null : index); // Toggle highlighting
+  };
 
   let resultsTable;
   if (isPending) { resultsTable = <LoadingIndicator />; }
@@ -119,9 +123,9 @@ export default function ContentPicks({ state, onPageChange }) {
   }
   if (data) {
     resultsTable = (<table className="min-w-full divide-y divide-gray-300">
-    <thead className="sticky top-0 z-10 bg-gray-50">
+    <thead className="sticky top-0 z-10 bg-gray-50 text-lg">
       <tr>
-        <th scope="col" colSpan={2} className="rounded-tl-lg py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+        <th scope="col" colSpan={2} className="rounded-tl-lg py-3.5 pl-4 pr-3 text-left font-semibold text-gray-900 sm:pl-6">
           <span className="flex items-center">
             <span className="bg-gray-900 w-8 h-8 flex items-center justify-center rounded-full text-white font-bold text-lg shadow-md">
               {data.length}
@@ -129,56 +133,57 @@ export default function ContentPicks({ state, onPageChange }) {
             <span className='ml-1'>Picks</span>
           </span>
         </th>
-        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+        <th scope="col" className="px-3 py-3.5 text-left font-semibold text-gray-900">
           Date
         </th>
-        <th scope="col" colSpan={2} className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+        <th scope="col" colSpan={2} className="px-3 py-3.5 text-left font-semibold text-gray-900">
           Permutation
         </th>
-        <th scope="col" colSpan={2} className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+        <th scope="col" colSpan={2} className="px-3 py-3.5 text-left font-semibold text-gray-900">
           Entry
         </th>
-        <th scope="col" colSpan={2} className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+        <th scope="col" colSpan={2} className="px-3 py-3.5 text-left font-semibold text-gray-900">
           Hit
         </th>
-        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+        <th scope="col" className="px-3 py-3.5 text-left font-semibold text-gray-900">
           Pick
         </th>
-        <th scope="col" className="rounded-tr-lg px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+        <th scope="col" className="rounded-tr-lg px-3 py-3.5 text-left font-semibold text-gray-900">
           Calendar
         </th>
       </tr>
     </thead>
-    <tbody className="divide-y divide-gray-900 bg-white">
+    <tbody className="divide-y divide-gray-900 bg-white text-lg">
       {data.map((d, index) => (
-        <tr key={"picks-tr-"+index+d.Num+d.Dt}>
-          <td className={classNames( (index==data.length-1) ? "rounded-bl-lg " : "", "whitespace-nowrap py-1 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6")}>
+        <tr key={"picks-tr-"+index+d.Num+d.Dt} className={`cursor-pointer ${highlightedRow === index ? 'bg-yellow-200' : ''}`}
+        onClick={() => handleRowClick(index)}>
+          <td className={classNames( (index==data.length-1) ? "rounded-bl-lg " : "", "py-3 whitespace-nowrap pl-4 pr-1 font-medium text-gray-900 sm:pl-6")}>
             {d.Num} 
           </td>
-          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
+          <td className="whitespace-nowrap px-3 py-1 text-gray-500">
             {new Date(d.Dt).toLocaleDateString('en-US', DATE_OPT_DAY_LONG)}</td>
-          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
+          <td className="whitespace-nowrap px-3 py-1 text-gray-500">
             {new Date(d.Dt).toLocaleDateString('en-US', DATE_OPT_MDY4)}</td>
-          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{d.Permutation}</td>
-          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
+          <td className="whitespace-nowrap px-3 py-1 text-gray-500">{d.Permutation}</td>
+          <td className="whitespace-nowrap px-3 py-1 text-gray-500">
             {new Date(d.Pdtm).toLocaleDateString('en-US', DATE_OPT_MDY4)}</td>
-          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{d.Entry}</td>
-          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
+          <td className="whitespace-nowrap px-3 py-1 text-gray-500">{d.Entry}</td>
+          <td className="whitespace-nowrap px-3 py-1 text-gray-500">
             {d.Entry && new Date(d.Edtm).toLocaleDateString('en-US', DATE_OPT_MDY4)}</td>
-          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">{d.Hitnum}</td>
-          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
+          <td className="whitespace-nowrap px-3 py-1 text-gray-500">{d.Hitnum}</td>
+          <td className="whitespace-nowrap px-3 py-1 text-gray-500">
             {d.Hitnum && <span className='pick-box p-1'>
               {new Date(d.Hitdtm).toLocaleDateString('en-US', DATE_OPT_MDY4)}</span>}
             {d.Q && <span className={classNames( Q_MAP.filter(q => q.q1 == d.Q11)[0].bg , "w-8 h-8 flex items-center justify-center rounded-full text-white font-bold text-xs shadow-md")}>
               {d.Q}
             </span>}
           </td>
-          <td className="whitespace-nowrap px-3 py-1 text-sm text-gray-500">
+          <td className="whitespace-nowrap px-3 py-1 text-gray-500">
             <span className={classNames(d.Magic ? "magic-box pr-1 pl-1" : d.Sq3 ? "trident-box pr-1 pl-1" : "", "text-black font-bold")}>
              {d.Q} {d.Num} {d.Squiggly}
             </span>
           </td>
-          <td className={classNames( (index==data.length-1) ? "rounded-br-lg " : "", "whitespace-nowrap px-3 py-1 text-sm text-gray-500")}>
+          <td className={classNames( (index==data.length-1) ? "rounded-br-lg " : "", "whitespace-nowrap px-3 py-1 text-gray-500")}>
             <a href={d.Calendar} target='_blank'>Add to Calendar</a>
           </td>
         </tr>

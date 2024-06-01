@@ -82,7 +82,7 @@ export default function PanelSheet({state, num, onMonthClick}) {
           Year
         </th>
         {HEADER_MONTHS.map((month) => {
-        let closeRow = findLowestDate('Dt2',data.filter(x => new Date(x.Dt).getMonth()==month.number-1));
+        const closeRow = findLowestDate('Dt2',data.filter(x => new Date(x.Dt).getMonth()==month.number-1));
         let bgColor = 'bg-white'; 
             if(closeRow){
               switch(closeRow['Q']){
@@ -124,10 +124,10 @@ export default function PanelSheet({state, num, onMonthClick}) {
             {year}
           </td>
           {HEADER_MONTHS.map((month) => {
-            let closeRow = findLowestDate('Dt2',data.filter(x => new Date(x.Dt).getMonth()==month.number-1));
+            const closeRow = findLowestDate('Dt2',data.filter(x => new Date(x.Dt).getMonth()==month.number-1));
             //console.log('LowestDate.ROW', closeRow);
             let bgColor = 'bg-white'; //
-            if(closeRow ){
+            if(closeRow){
               //&& year >= new Date(closeRow['Dt']).getFullYear() 
               //&& year <= new Date(closeRow['Dt2']).getFullYear()
               // && year >= 2015 && year <= 2021
@@ -139,13 +139,13 @@ export default function PanelSheet({state, num, onMonthClick}) {
                 case "DBL": bgColor = bgColors[4]; break;
                 default: bgColor = bgColors[5]; //Q
               }
-            }
+            } else { bgColor = 'bg-amber-100'; }
             const filterData = removeDuplicates(['Num','Dt','Q'], data.filter(
               x => new Date(x.Dt).getFullYear()==year && new Date(x.Dt).getMonth()==month.number-1
             ));
             return(
             <Fragment key={"frag-"+month.name+year}>
-            <td key={'td1-'+month.name+'-'+year} className={classNames('bg-white', 'border-b border-gray-800 whitespace-nowrap py-1 pl-1 pr-1 text-xs font-bold text-gray-900 sm:pl-1 lg:pl-1')}>
+            <td key={'td1-'+month.name+'-'+year} className={classNames(closeRow ? 'bg-white' : bgColor, 'border-b border-gray-800 whitespace-nowrap py-1 pl-1 pr-1 text-xs font-bold text-gray-900 sm:pl-1 lg:pl-1')}>
               {filterData.map((x, i) => {
                 let c = "";
                 if(closeRow && x.Dt == closeRow.Dt2) c="border-t-4 border-gray-900";
@@ -162,7 +162,7 @@ export default function PanelSheet({state, num, onMonthClick}) {
             <td key={'td2-'+month.name+'-'+year} className={classNames(bgColor, 'border-b border-gray-800 whitespace-nowrap py-1 pl-1 pr-1 text-xs font-normal text-gray-900 sm:pl-1 lg:pl-1')}>
 
             </td>
-            <td key={'td3-'+month.name+'-'+year} className={classNames('bg-white', 'border-b border-gray-800 whitespace-nowrap py-1 pl-1 pr-1 text-xs font-normal text-gray-900 sm:pl-1 lg:pl-1')}>
+            <td key={'td3-'+month.name+'-'+year} className={classNames(closeRow ? 'bg-white' : bgColor, 'border-b border-gray-800 whitespace-nowrap py-1 pl-1 pr-1 text-xs font-normal text-gray-900 sm:pl-1 lg:pl-1')}>
               {filterData.map((x, i) => {
                 let c = "";
                 if(closeRow && x.Dt == closeRow.Dt2) c="border-t-4 border-gray-900";
