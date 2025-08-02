@@ -24,6 +24,11 @@ export default function ContentScoreboard({ state, onPageChange }) {
   const handleTabChange = (value) => { setTab(value); localStorage.setItem('score-tab', value); onPageChange("1. Scoreboard" ); };
   const [dtFrom, setDtFrom] = useState(INIT_FROM);
   const handleFromChange = (date) => { setDtFrom(date); localStorage.setItem('score-from', date); };
+  
+  // Add state for number filtering
+  const [numFilterActive, setNumFilterActive] = useState(-1);
+  const [clickedCell, setClickedCell] = useState(null);
+  
   useEffect(() => {
     const storedTab = localStorage.getItem('score-tab');
     if (storedTab) { setTab(storedTab); onPageChange("1. Scoreboard" ); }
@@ -56,6 +61,20 @@ export default function ContentScoreboard({ state, onPageChange }) {
     });
   };
 
+  // Handle cell click for number filtering
+  const handleCellClick = (year, month, xnum) => {
+    const cellKey = `${year}-${month}-${xnum}`;
+    if (clickedCell === cellKey) {
+      // If clicking the same cell, reset filter
+      setNumFilterActive(-1);
+      setClickedCell(null);
+    } else {
+      // Set new filter
+      setNumFilterActive(parseInt(xnum));
+      setClickedCell(cellKey);
+    }
+  };
+
   const scoreUrl = import.meta.env.VITE_URL_SCORE+'&state='+state+'&from='+dtFrom.toLocaleDateString('en-US', dateOptions2)+'&to='+dtTo.toLocaleDateString('en-US', dateOptions2);
   const { data, isPending, isError, error } = useQuery({
     queryKey: [state, 'score', dtFrom, dtTo],
@@ -72,7 +91,18 @@ export default function ContentScoreboard({ state, onPageChange }) {
     );
   }
   if (data) {
-    const qData = data.filter(d => magic ? d.Magic || d.Sq3 : d).filter(x => Q_MAP.filter((_, index) => enabledQs[index]).map(eq => eq.q1).includes(x.Q11));
+    // Apply number filter if active
+    let qData = data.filter(d => magic ? d.Magic || d.Sq3 : d).filter(x => Q_MAP.filter((_, index) => enabledQs[index]).map(eq => eq.q1).includes(x.Q11));
+    
+    if (numFilterActive >= 0 && tab === SCORE_TABS[0]) {
+      qData = qData.filter(x => {
+        const num = parseInt(x.Num);
+        const minnum = parseInt(numFilterActive) - 20;
+        const maxnum = parseInt(numFilterActive) + 20;
+        return num >= minnum && num <= maxnum;
+      });
+    }
+    
     const dotPlotFooter = (tab == SCORE_TABS[0] || tab == SCORE_TABS[2] || tab == SCORE_TABS[3]) ? (<tfoot>
       <tr>
         <th scope="col" className="rounded-bl-lg sticky top-0 left-0 z-9 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8">
@@ -125,13 +155,22 @@ export default function ContentScoreboard({ state, onPageChange }) {
               const filterData = qData.filter(
                 x => new Date(x.Dtm).getFullYear()==year && new Date(x.Dtm).getMonth()==month.number-1
               );
+              const isClickedCell = clickedCell === `${year}-${month.name}`;
               return(
-              <td key={'td1-'+month.name+'-'+year} className={classNames('bg-white', 'border-b border-l border-gray-800 whitespace-nowrap py-1 pl-1 pr-1 text-xs font-bold text-gray-900 sm:pl-1 lg:pl-1')}>
+              <td 
+                key={'td1-'+month.name+'-'+year} 
+                className={classNames(
+                  'bg-white cursor-pointer hover:bg-gray-50', 
+                  isClickedCell ? 'bg-blue-100' : '',
+                  'border-b border-l border-gray-800 whitespace-nowrap py-1 pl-1 pr-1 text-xs font-bold text-gray-900 sm:pl-1 lg:pl-1'
+                )}
+              >
                 {filterData.map((x, i) => {
                   const cBox = x.Magic ? "magic-box" : x.Sq3 ? "trident-box" : "";
                   const ballColor = Q_MAP.filter(q => q.q1 == x.Q11)[0].bg;
                   return(
-                  <div key={'td1-span-'+month.name+'-'+year+x+i} className={classNames(cBox, "p-1")}>
+                  <div key={'td1-span-'+month.name+'-'+year+x+i} className={classNames(cBox, "p-1")}
+                    onClick={() => handleCellClick(year, month.name, x.Num)}>
                     {/* {JSON.stringify(x)} */}
                     {new Date(x.Dtm).toLocaleDateString('en-US', dateOptions)} {x.Num} {new Date(x.Dtm).getHours() == 12 ? <span><SvgMid color="text-orange-500" /></span> : <span><SvgEve /></span>}
                     <span className="flex items-center">
@@ -403,6 +442,19 @@ export default function ContentScoreboard({ state, onPageChange }) {
               </th>
             </tr>
             {qRow}
+            {numFilterActive >= 0 && tab === SCORE_TABS[0] && (
+              <tr>
+                <th colSpan={2} className="px-3 py-2 text-center text-sm font-semibold text-gray-900 bg-blue-50">
+                <span className="text-blue-700">Cluster {numFilterActive} Active: between {Math.max(0, numFilterActive - 20)} and {Math.min(999, numFilterActive + 20)}</span>
+                <button 
+                    onClick={() => { setNumFilterActive(-1); setClickedCell(null); }}
+                    className="ml-3 text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
+                  >
+                    Clear Cluster
+                  </button>
+                </th>
+              </tr>
+            )}
           </thead>
         </table>
       </div>
