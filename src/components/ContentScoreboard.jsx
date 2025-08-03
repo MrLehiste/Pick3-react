@@ -97,8 +97,8 @@ export default function ContentScoreboard({ state, onPageChange }) {
     if (numFilterActive >= 0 && tab === SCORE_TABS[0]) {
       qData = qData.filter(x => {
         const num = parseInt(x.Num);
-        const minnum = parseInt(numFilterActive) - 20;
-        const maxnum = parseInt(numFilterActive) + 20;
+        const minnum = parseInt(numFilterActive) - 15;
+        const maxnum = parseInt(numFilterActive) + 15;
         return num >= minnum && num <= maxnum;
       });
     }
@@ -154,7 +154,7 @@ export default function ContentScoreboard({ state, onPageChange }) {
             {HEADER_MONTHS.map((month) => {
               const filterData = qData.filter(
                 x => new Date(x.Dtm).getFullYear()==year && new Date(x.Dtm).getMonth()==month.number-1
-              );
+              ).sort((a, b) => new Date(a.Dtm) - new Date(b.Dtm));
               const isClickedCell = clickedCell === `${year}-${month.name}`;
               return(
               <td 
@@ -169,9 +169,10 @@ export default function ContentScoreboard({ state, onPageChange }) {
                   const cBox = x.Magic ? "magic-box" : x.Sq3 ? "trident-box" : "";
                   const ballColor = Q_MAP.filter(q => q.q1 == x.Q11)[0].bg;
                   return(
-                  <div key={'td1-span-'+month.name+'-'+year+x+i} className={classNames(cBox, "p-1")}
+                  <div key={'td1-span-'+month.name+'-'+year+x+i} className={classNames(cBox, "p-1", x.Pick ? "bg-yellow-100" : "")}
                     onClick={() => handleCellClick(year, month.name, x.Num)}>
                     {/* {JSON.stringify(x)} */}
+                    {x.Pick && <span className="text-yellow-600 font-bold">★</span>}
                     {new Date(x.Dtm).toLocaleDateString('en-US', dateOptions)} {x.Num} {new Date(x.Dtm).getHours() == 12 ? <span><SvgMid color="text-orange-500" /></span> : <span><SvgEve /></span>}
                     <span className="flex items-center">
                       <span className={classNames(ballColor, "w-5 h-5 flex items-center justify-center rounded-full text-white font-bold text-xs shadow-md")}>
@@ -445,7 +446,7 @@ export default function ContentScoreboard({ state, onPageChange }) {
             {numFilterActive >= 0 && tab === SCORE_TABS[0] && (
               <tr>
                 <th colSpan={2} className="px-3 py-2 text-center text-sm font-semibold text-gray-900 bg-blue-50">
-                <span className="text-blue-700">Cluster {numFilterActive} Active: between {Math.max(0, numFilterActive - 20)} and {Math.min(999, numFilterActive + 20)}</span>
+                <span className="text-blue-700">Cluster {numFilterActive} Active: between {Math.max(0, numFilterActive - 15)} and {Math.min(999, numFilterActive + 15)}</span>
                 <button 
                     onClick={() => { setNumFilterActive(-1); setClickedCell(null); }}
                     className="ml-3 text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
