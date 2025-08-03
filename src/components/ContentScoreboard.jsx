@@ -482,15 +482,15 @@ export default function ContentScoreboard({ state, onPageChange }) {
                                     <div
                                       key={`${cell.num}-${hitIndex}`}
                                       className={classNames(
-                                        'relative w-6 h-6 flex items-center justify-center rounded-full cursor-pointer transition-all hover:scale-110 shadow-sm',
+                                        'relative w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-all hover:scale-110 shadow-sm',
                                         bgColor
                                       )}
                                       title={`${cell.num}: ${hit.Q1} ${hit.Squiggly} ${hasPick ? '(Pick: ' + hit.Pick + ')' : ''}`}
                                     >
-                                      <span className="text-white font-bold" style={{ fontSize: '9px' }}>
+                                      <span className="text-white font-bold" style={{ fontSize: '12px' }}>
                                         {cell.num}
                                       </span>
-                                      {hasPick && <span className="absolute -top-0.5 -right-0.5" style={{ fontSize: '8px' }}>✨</span>}
+                                      {hasPick && <span className="absolute -top-2 -right-2" style={{ fontSize: '12px' }}>✨</span>}
                                     </div>
                                   );
                                 })
@@ -533,10 +533,9 @@ export default function ContentScoreboard({ state, onPageChange }) {
               </div>
               <div className="flex items-center">
                 <span className="mr-1">✨</span>
-                <span>Has Pick</span>
+                <span>Pick</span>
               </div>
             </div>
-            <p className="text-xs text-gray-600 mt-2">Multiple balls = multiple hits | Empty cells = no hits</p>
           </div>
         </div>
       </div>);
