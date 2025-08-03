@@ -19,7 +19,7 @@ export default function ContentScoreboard({ state, onPageChange }) {
   const dateOptions = { month: 'numeric', day: 'numeric' };
   const dateOptions2 = { month: 'numeric', day: 'numeric', year: 'numeric' };
   function classNames(...classes) { return classes.filter(Boolean).join(' '); }
-  const SCORE_TABS = ['Horizontal ==', 'Vertical ||', 'Days Dot Plot', 'Years Dot Plot', 'Magic Interval'];
+  const SCORE_TABS = ['Horizontal ==', 'Vertical ||', 'Days Dot Plot', 'Years Dot Plot', 'Magic Interval', 'Clusters'];
   const [tab, setTab] = useState(SCORE_TABS[0]);
   const handleTabChange = (value) => { setTab(value); localStorage.setItem('score-tab', value); onPageChange("1. Scoreboard" ); };
   const [dtFrom, setDtFrom] = useState(INIT_FROM);
@@ -398,6 +398,148 @@ export default function ContentScoreboard({ state, onPageChange }) {
       </tr>
     </tbody>
     </table>);
+    }
+    if(tab == SCORE_TABS[5]) {
+      const numberMap = new Map();
+        qData.forEach(x => {
+          const num = x.Num;
+          if (!numberMap.has(num)) {
+            numberMap.set(num, []);
+          }
+          numberMap.get(num).push(x);
+        });
+      const ranges = [];
+      for (let i = 0; i < 10; i++) {
+        ranges.push({
+          start: i * 100,
+          end: (i * 100) + 99,
+          label: `${i}00-${i}99`
+        });
+      }
+      resultsTable = (<div className="w-full p-4">
+        {ranges.map(range => {
+          // Check if this range has any hits
+          let hasHitsInRange = false;
+          for (let num = range.start; num <= range.end; num++) {
+            if (numberMap.has(num.toString().padStart(3, '0'))) {
+              hasHitsInRange = true;
+              break;
+            }
+          }
+          
+          if (!hasHitsInRange) return null;
+          
+          // Create a 10x10 grid for this hundred range
+          const grid = [];
+          for (let row = 0; row < 10; row++) {
+            const rowData = [];
+            for (let col = 0; col < 10; col++) {
+              const num = (range.start + row * 10 + col).toString().padStart(3, '0');
+              rowData.push({
+                num: num,
+                hits: numberMap.get(num) || []
+              });
+            }
+            grid.push(rowData);
+          }
+          
+          return (
+            <div key={range.label} className="mb-1">
+              <h4 className="text-md font-semibold text-gray-800 mb-2">{range.label}</h4>
+              <div className="inline-block border border-gray-300">
+                <table className="border-collapse">
+                  <thead>
+                    <tr>
+                      <th className="border border-gray-200 p-1 bg-gray-100 text-xs"></th>
+                      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(col => (
+                        <th key={col} className="border border-gray-200 p-1 bg-gray-100 text-xs font-semibold w-16">
+                          {/* {col}0 */}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {grid.map((row, rowIndex) => (
+                      <tr key={rowIndex}>
+                        <td className="border border-gray-200 p-1 bg-gray-100 text-xs font-semibold">
+                          {/* {rowIndex} */}
+                        </td>
+                        {row.map((cell, colIndex) => (
+                          <td key={colIndex} className="border border-gray-200 p-1 align-center bg-white">
+                            <div className="flex flex-wrap gap-0.5 justify-center items-center">
+                              {cell.hits.length > 0 ? (
+                                cell.hits.map((hit, hitIndex) => {
+                                  const hasPick = hit.Pick !== null;
+                                  const isMagic = hit.Magic;
+                                  const isTrident = hit.Sq3;
+                                  
+                                  // Determine color
+                                  let bgColor = 'bg-gray-400'; // default
+                                  if (isMagic) bgColor = 'bg-black';
+                                  else if (isTrident) bgColor = 'bg-purple-600';
+                                  
+                                  return (
+                                    <div
+                                      key={`${cell.num}-${hitIndex}`}
+                                      className={classNames(
+                                        'relative w-6 h-6 flex items-center justify-center rounded-full cursor-pointer transition-all hover:scale-110 shadow-sm',
+                                        bgColor
+                                      )}
+                                      title={`${cell.num}: ${hit.Q1} ${hit.Squiggly} ${hasPick ? '(Pick: ' + hit.Pick + ')' : ''}`}
+                                    >
+                                      <span className="text-white font-bold" style={{ fontSize: '9px' }}>
+                                        {cell.num}
+                                      </span>
+                                      {hasPick && <span className="absolute -top-0.5 -right-0.5" style={{ fontSize: '8px' }}>✨</span>}
+                                    </div>
+                                  );
+                                })
+                              ) : (
+                                <div className="w-1 h-1"></div>
+                              )}
+                            </div>
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          );
+        })}
+        
+        <div className="mt-6 flex justify-center">
+          <div className="bg-gray-100 p-4 rounded-lg">
+            <h4 className="text-sm font-semibold text-gray-700 mb-2">Legend:</h4>
+            <div className="flex gap-4 text-xs items-center">
+              <div className="flex items-center">
+                <div className="w-7 h-7 bg-black rounded-full mr-1 flex items-center justify-center">
+                  <span className="text-white" style={{ fontSize: '9px' }}>###</span>
+                </div>
+                <span>Magic</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-7 h-7 bg-purple-600 rounded-full mr-1 flex items-center justify-center">
+                  <span className="text-white" style={{ fontSize: '9px' }}>###</span>
+                </div>
+                <span>Trident €</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-7 h-7 bg-gray-400 rounded-full mr-1 flex items-center justify-center">
+                  <span className="text-white" style={{ fontSize: '9px' }}>###</span>
+                </div>
+                <span>Other</span>
+              </div>
+              <div className="flex items-center">
+                <span className="mr-1">✨</span>
+                <span>Has Pick</span>
+              </div>
+            </div>
+            <p className="text-xs text-gray-600 mt-2">Multiple balls = multiple hits | Empty cells = no hits</p>
+          </div>
+        </div>
+      </div>);
     }
   }
   //const selectedQs = Q_MAP.filter((_, index) => enabledQs[index]).map(eq => eq.q1);
