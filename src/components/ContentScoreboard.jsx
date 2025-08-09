@@ -28,6 +28,7 @@ export default function ContentScoreboard({ state, onPageChange }) {
   // Add state for number filtering
   const [numFilterActive, setNumFilterActive] = useState(-1);
   const [clickedCell, setClickedCell] = useState(null);
+  const [highlightedCluster, setHighlightedCluster] = useState(null);
   
   useEffect(() => {
     const storedTab = localStorage.getItem('score-tab');
@@ -392,14 +393,52 @@ export default function ContentScoreboard({ state, onPageChange }) {
     </table>);
     }
     if(tab == SCORE_TABS[5]) {
+      // Handle cluster click in tab 5
+      const handleClusterClick = (num) => {
+        const numInt = parseInt(num);
+        if (highlightedCluster === numInt) {
+          // If clicking the same cluster, clear highlight
+          setHighlightedCluster(null);
+        } else {
+          // Set new highlight
+          setHighlightedCluster(numInt);
+        }
+      };
+      
+      // Check if a number is within the highlighted cluster range
+      const isInHighlightedCluster = (num) => {
+        if (highlightedCluster === null) return false;
+        const numInt = parseInt(num);
+        return numInt >= (highlightedCluster - 15) && numInt <= (highlightedCluster + 15);
+      };
+      
+      // Get count of hits in the highlighted cluster
+      const getClusterHitCount = () => {
+        if (highlightedCluster === null) return 0;
+        const minNum = highlightedCluster - 15;
+        const maxNum = highlightedCluster + 15;
+        return qData.filter(x => {
+          const num = parseInt(x.Num);
+          return num >= minNum && num <= maxNum;
+        }).length;
+      };
+      
+      // Check which hundred range the highlighted cluster belongs to
+      const getHighlightedRange = () => {
+        if (highlightedCluster === null) return null;
+        const hundred = Math.floor(highlightedCluster / 100) * 100;
+        return hundred;
+      };
+
       const numberMap = new Map();
-        qData.forEach(x => {
-          const num = x.Num;
-          if (!numberMap.has(num)) {
-            numberMap.set(num, []);
-          }
-          numberMap.get(num).push(x);
-        });
+      qData.forEach(x => {
+        const num = x.Num;
+        if (!numberMap.has(num)) {
+          numberMap.set(num, []);
+        }
+        numberMap.get(num).push(x);
+      });
+      
       const ranges = [];
       for (let i = 0; i < 10; i++) {
         ranges.push({
@@ -408,7 +447,11 @@ export default function ContentScoreboard({ state, onPageChange }) {
           label: `${i}00-${i}99`
         });
       }
-      resultsTable = (<div className="w-full p-4">
+      
+      const highlightedRange = getHighlightedRange();
+      const clusterHitCount = getClusterHitCount();
+      resultsTable = (
+        <div className="w-full p-4">
         {ranges.map(range => {
           // Check if this range has any hits
           let hasHitsInRange = false;
@@ -438,6 +481,29 @@ export default function ContentScoreboard({ state, onPageChange }) {
           return (
             <div key={range.label} className="mb-1">
               <h4 className="text-md font-semibold text-gray-800 mb-2">{range.label}</h4>
+              
+              {/* Show highlight bar only for the range containing the highlighted cluster */}
+              {highlightedCluster !== null && highlightedRange === range.start && (
+                <div className="mb-3 p-3 bg-blue-50 rounded-lg flex items-center justify-between border-2 border-blue-200">
+                  <div className="flex items-center gap-3">
+                    <span className="text-blue-700 font-semibold">
+                      Cluster {highlightedCluster}: Range {Math.max(0, highlightedCluster - 15)} to {Math.min(999, highlightedCluster + 15)}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <div className="bg-blue-600 text-white px-3 py-1 rounded-full font-bold text-sm">
+                        {clusterHitCount} hit{clusterHitCount !== 1 ? 's' : ''} in cluster
+                      </div>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setHighlightedCluster(null)}
+                    className="text-xs bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors"
+                  >
+                    Clear
+                  </button>
+                </div>
+              )}
+              
               <div className="inline-block border border-gray-300">
                 <table className="border-collapse">
                   <thead>
@@ -445,7 +511,6 @@ export default function ContentScoreboard({ state, onPageChange }) {
                       <th className="border border-gray-200 p-1 bg-gray-100 text-xs"></th>
                       {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(col => (
                         <th key={col} className="border border-gray-200 p-1 bg-gray-100 text-xs font-semibold w-16">
-                          {/* {col}0 */}
                         </th>
                       ))}
                     </tr>
@@ -454,44 +519,57 @@ export default function ContentScoreboard({ state, onPageChange }) {
                     {grid.map((row, rowIndex) => (
                       <tr key={rowIndex}>
                         <td className="border border-gray-200 p-1 bg-gray-100 text-xs font-semibold">
-                          {/* {rowIndex} */}
                         </td>
-                        {row.map((cell, colIndex) => (
-                          <td key={colIndex} className="border border-gray-200 p-1 align-center bg-white">
-                            <div className="flex flex-wrap gap-0.5 justify-center items-center">
-                              {cell.hits.length > 0 ? (
-                                cell.hits.map((hit, hitIndex) => {
-                                  const hasPick = hit.Pick !== null;
-                                  const isMagic = hit.Magic;
-                                  const isTrident = hit.Sq3;
-                                  
-                                  // Determine color
-                                  let bgColor = 'bg-gray-400'; // default
-                                  if (isMagic) bgColor = 'bg-black';
-                                  else if (isTrident) bgColor = 'bg-purple-600';
-                                  
-                                  return (
-                                    <div
-                                      key={`${cell.num}-${hitIndex}`}
-                                      className={classNames(
-                                        'relative w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-all hover:scale-110 shadow-sm',
-                                        bgColor
-                                      )}
-                                      title={`${cell.num}: ${hit.Q1} ${hit.Squiggly} ${hasPick ? '(Pick: ' + hit.Pick + ')' : ''}`}
-                                    >
-                                      <span className="text-white font-bold" style={{ fontSize: '12px' }}>
-                                        {cell.num}
-                                      </span>
-                                      {hasPick && <span className="absolute -top-2 -right-2" style={{ fontSize: '12px' }}>✨</span>}
-                                    </div>
-                                  );
-                                })
-                              ) : (
-                                <div className="w-1 h-1"></div>
+                        {row.map((cell, colIndex) => {
+                          const isHighlighted = isInHighlightedCluster(cell.num);
+                          return (
+                            <td 
+                              key={colIndex} 
+                              className={classNames(
+                                "border border-gray-200 p-1 align-center transition-all duration-200",
+                                isHighlighted ? "bg-yellow-100" : "bg-white"
                               )}
-                            </div>
-                          </td>
-                        ))}
+                            >
+                              <div className="flex flex-wrap gap-0.5 justify-center items-center">
+                                {cell.hits.length > 0 ? (
+                                  cell.hits.map((hit, hitIndex) => {
+                                    const hasPick = hit.Pick !== null;
+                                    const isMagic = hit.Magic;
+                                    const isTrident = hit.Sq3;
+                                    
+                                    // Determine color
+                                    let bgColor = 'bg-gray-400'; // default
+                                    if (isMagic) bgColor = 'bg-black';
+                                    else if (isTrident) bgColor = 'bg-purple-600';
+                                    
+                                    // Add highlight effect
+                                    const ringClass = isHighlighted ? 'ring-4 ring-yellow-400 ring-opacity-75' : '';
+                                    
+                                    return (
+                                      <div
+                                        key={`${cell.num}-${hitIndex}`}
+                                        className={classNames(
+                                          'relative w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-all hover:scale-110 shadow-sm',
+                                          bgColor,
+                                          ringClass
+                                        )}
+                                        onClick={() => handleClusterClick(cell.num)}
+                                        title={`${cell.num}: ${hit.Q1} ${hit.Squiggly} ${hasPick ? '(Pick: ' + hit.Pick + ')' : ''} - Click to highlight cluster`}
+                                      >
+                                        <span className="text-white font-bold" style={{ fontSize: '12px' }}>
+                                          {cell.num}
+                                        </span>
+                                        {hasPick && <span className="absolute -top-2 -right-2" style={{ fontSize: '12px' }}>✨</span>}
+                                      </div>
+                                    );
+                                  })
+                                ) : (
+                                  <div className="w-1 h-1"></div>
+                                )}
+                              </div>
+                            </td>
+                          );
+                        })}
                       </tr>
                     ))}
                   </tbody>
@@ -527,10 +605,15 @@ export default function ContentScoreboard({ state, onPageChange }) {
                 <span className="mr-1">✨</span>
                 <span>Pick</span>
               </div>
+              <div className="flex items-center">
+                <div className="w-7 h-7 bg-yellow-100 border-2 border-yellow-400 rounded mr-1"></div>
+                <span>Cluster Highlight</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>);
+      </div>
+      );
     }
   }
   //const selectedQs = Q_MAP.filter((_, index) => enabledQs[index]).map(eq => eq.q1);
