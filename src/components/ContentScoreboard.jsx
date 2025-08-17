@@ -83,6 +83,30 @@ export default function ContentScoreboard({ state, onPageChange }) {
     staleTime: 1000 * 60 * 60 * 12, //12 hours
     cacheTime: 1000 * 60 * 60 * 12, //12 hours
   });
+  const [notesData, setNotesData] = useState([]);
+
+  // Define fetchNotes outside useEffect so it can be reused
+  const fetchNotes = async () => {
+    if (tab === SCORE_TABS[5]) {
+      try {
+        const notesUrl = import.meta.env.VITE_URL_NOTES + '&state=' + state + '&tab=Clusters';
+        const notesResponse = await fetch(notesUrl);
+        const notesData = await notesResponse.json();
+        setNotesData(notesData);
+      } catch (error) {
+        console.error('Error fetching notes:', error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (tab === SCORE_TABS[5]) {
+      fetchNotes();
+    } else {
+      // Clear notes when not on tab 5
+      //setNotesData([]);
+    }
+  }, [tab, state]);
 
   let resultsTable;
   if (isPending) { resultsTable = <LoadingIndicator />; }
@@ -169,10 +193,9 @@ export default function ContentScoreboard({ state, onPageChange }) {
                   const cBox = x.Magic ? "magic-box" : x.Sq3 ? "trident-box" : "";
                   const ballColor = Q_MAP.filter(q => q.q1 == x.Q11)[0].bg;
                   return(
-                  <div key={'td1-span-'+month.name+'-'+year+x+i} className={classNames(cBox, "p-1", x.Pick ? "bg-yellow-100" : "")}
+                  <div key={'td1-span-'+month.name+'-'+year+x+i} className={classNames(cBox, "p-1", x.Pick ? "bg-yellow-300" : "")}
                     onClick={() => handleCellClick(year, month.name, x.Num)}>
                     {/* {JSON.stringify(x)} */}
-                    {x.Pick && <span className="text-yellow-600 font-bold">★</span>}
                     {new Date(x.Dtm).toLocaleDateString('en-US', dateOptions)} {x.Num} {new Date(x.Dtm).getHours() == 12 ? <span><SvgMid color="text-orange-500" /></span> : <span><SvgEve /></span>}
                     <span className="flex items-center">
                       <span className={classNames(ballColor, "w-5 h-5 flex items-center justify-center rounded-full text-white font-bold text-xs shadow-md")}>
@@ -477,6 +500,139 @@ export default function ContentScoreboard({ state, onPageChange }) {
             }
             grid.push(rowData);
           }
+
+          //Note Input component
+          const NoteInput = ({ state, tab, p100, onNoteAdded }) => {
+            const [noteText, setNoteText] = useState('');
+            const [isSubmitting, setIsSubmitting] = useState(false);
+          
+            const handleSubmit = async (e) => {
+              e.preventDefault();
+              
+              if (!noteText.trim()) {
+                return;
+              }
+          
+              setIsSubmitting(true);
+          
+              try {
+                // URL encode the parameters
+                const params = new URLSearchParams({
+                  action: 'insert',
+                  st: state,
+                  dtm: new Date().toISOString(),
+                  tab: tab,
+                  p100: p100,
+                  note: noteText.trim()
+                });
+                
+                const insertUrl = `${import.meta.env.VITE_URL_NOTES}&${params.toString()}`;
+                const response = await fetch(insertUrl);
+          
+                if (response.ok) {
+                  setNoteText('');
+                  if (onNoteAdded) {
+                    onNoteAdded();
+                  }
+                } else {
+                  console.error('Failed to add note');
+                }
+              } catch (error) {
+                console.error('Error adding note:', error);
+              } finally {
+                setIsSubmitting(false);
+              }
+            };
+          
+            return (
+              <form onSubmit={handleSubmit} className="ml-8 mt-2 mb-2">
+                <textarea
+                  value={noteText}
+                  onChange={(e) => setNoteText(e.target.value)}
+                  placeholder="Add a note..."
+                  rows="3"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  disabled={isSubmitting}
+                />
+                <div className="mt-2 flex justify-end">
+                  <button
+                    type="submit"
+                    disabled={!noteText.trim() || isSubmitting}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {isSubmitting ? 'Adding...' : 'Add Note'}
+                  </button>
+                </div>
+              </form>
+            );
+          };
+          const handleNoteAdded = () => {
+            // Refetch notes after adding
+            fetchNotes();
+          };
+          // Styled note display component
+          const NoteDisplay = ({ notes, onNoteDeleted }) => {
+            const handleDelete = async (noteId) => {
+              if (!window.confirm('Are you sure you want to delete this note?')) {
+                return;
+              }
+          
+              try {
+                const deleteUrl = `${import.meta.env.VITE_URL_NOTES}&id=${noteId}&action=delete`;
+                const response = await fetch(deleteUrl);
+          
+                if (response.ok) {
+                  if (onNoteDeleted) {
+                    onNoteDeleted(noteId);
+                  }
+                } else {
+                  console.error('Failed to delete note');
+                }
+              } catch (error) {
+                console.error('Error deleting note:', error);
+              }
+            };
+          
+            return (
+              <div className="ml-8 mt-2 space-y-2 max-w-[560px]">
+                {notes.map((note, idx) => (
+                  <div 
+                    key={idx} 
+                    className="bg-gray-50 rounded-lg p-3 border-l-4 border-blue-400"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="text-xs text-gray-500 mb-1">
+                          {new Date(note.Dtm).toLocaleString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </div>
+                        <div className="text-sm text-gray-700 break-words whitespace-pre-wrap">
+                          {note.Note}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleDelete(note.Id)}
+                        className="ml-2 text-xs text-red-600 hover:text-red-800 hover:bg-red-50 px-2 py-1 rounded transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          }; //NotesDisplay
+          const handleNoteDeleted = (deletedNoteId) => {
+            // Remove the deleted note from state
+            setNotesData(prevNotes => prevNotes.filter(note => note.Id !== deletedNoteId));
+            // Or refetch all notes
+            // fetchNotes();
+          };
           
           return (
             <div key={range.label} className="mb-1">
@@ -573,8 +729,11 @@ export default function ContentScoreboard({ state, onPageChange }) {
                       </tr>
                     ))}
                   </tbody>
+                  <tfoot></tfoot>
                 </table>
               </div>
+              <NoteInput state={state} tab="Clusters" p100={range.start} onNoteAdded={handleNoteAdded} />
+              <NoteDisplay notes={notesData.filter(note => note.P100 === range.start)} onNoteDeleted={handleNoteDeleted} />
             </div>
           );
         })}

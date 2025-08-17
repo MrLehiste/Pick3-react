@@ -24,8 +24,8 @@ export const Q_MAP = [
   {q1: 'G', q: 'GRN', bg: 'bg-green-400'},
   {q1: 'B', q: 'BRN', bg: 'bg-amber-600'},
   {q1: '4', q: 'Q4', bg: 'bg-yellow-500'},
-  {q1: '5', q: 'Q5', bg: 'bg-yellow-400'},
-  {q1: 'Q', q: 'Q6+', bg: 'bg-yellow-300'},
+  {q1: '5', q: 'Q5', bg: 'bg-yellow-500'},
+  {q1: 'Q', q: 'Q6+', bg: 'bg-yellow-500'},
   {q1: 'F', q: 'FRG', bg: 'bg-red-500'},
   {q1: 'D', q: 'DBL', bg: 'bg-blue-600'},
 ];
