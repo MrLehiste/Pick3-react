@@ -726,7 +726,7 @@ export default function ContentScoreboard({ state, onPageChange }) {
                                         <div className="text-xs text-gray-600 whitespace-nowrap" style={{ fontSize: '10px' }}>
                                           {new Date(hit.Dtm).toLocaleString('en-US', { 
                                             month: 'short', 
-                                            year: '2-digit' 
+                                            year: 'numeric' 
                                           })}
                                         </div>
                                       </div>
