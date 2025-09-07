@@ -704,18 +704,31 @@ export default function ContentScoreboard({ state, onPageChange }) {
                                     return (
                                       <div
                                         key={`${cell.num}-${hitIndex}`}
-                                        className={classNames(
-                                          'relative w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-all hover:scale-110 shadow-sm',
-                                          bgColor,
-                                          ringClass
-                                        )}
-                                        onClick={() => handleClusterClick(cell.num)}
-                                        title={`${cell.num}: ${hit.Q1} ${hit.Squiggly} ${hasPick ? '(Pick: ' + hit.Pick + ')' : ''} - Click to highlight cluster`}
+                                        className="flex flex-col items-center gap-1"
                                       >
-                                        <span className="text-white font-bold" style={{ fontSize: '12px' }}>
-                                          {cell.num}
-                                        </span>
-                                        {hasPick && <span className="absolute -top-2 -right-2" style={{ fontSize: '12px' }}>✨</span>}
+                                        {/* Ball */}
+                                        <div
+                                          className={classNames(
+                                            'relative w-8 h-8 flex items-center justify-center rounded-full cursor-pointer transition-all hover:scale-110 shadow-sm',
+                                            bgColor,
+                                            ringClass
+                                          )}
+                                          onClick={() => handleClusterClick(cell.num)}
+                                          title={`${cell.num}: ${hit.Q1} ${hit.Squiggly} ${hasPick ? '(Pick: ' + hit.Pick + ')' : ''} - Click to highlight cluster`}
+                                        >
+                                          <span className="text-white font-bold" style={{ fontSize: '12px' }}>
+                                            {cell.num}
+                                          </span>
+                                          {hasPick && <span className="absolute -top-2 -right-2" style={{ fontSize: '12px' }}>✨</span>}
+                                        </div>
+                                        
+                                        {/* Month/Year display */}
+                                        <div className="text-xs text-gray-600 whitespace-nowrap" style={{ fontSize: '10px' }}>
+                                          {new Date(hit.Dtm).toLocaleString('en-US', { 
+                                            month: 'short', 
+                                            year: '2-digit' 
+                                          })}
+                                        </div>
                                       </div>
                                     );
                                   })
