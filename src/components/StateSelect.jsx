@@ -9,6 +9,7 @@ const STATES = [
   {st: "ar", state: "Arkansas", game: "Cash 3"},
   {st: "fl", state: "Florida", game: "Pick 3"},
   {st: "mo", state: "Missouri", game: "Pick 3"},
+  {st: "ok", state: "Oklahoma", game: "Pick 3"},
 ];
 
 export default function StateSelect({ selectedState, onStateChange, onDataLoaded, onDataUpdated }) {
@@ -68,8 +69,8 @@ export default function StateSelect({ selectedState, onStateChange, onDataLoaded
           setLastDraws(data); 
           setDataLoaded(true);
           onDataLoaded();
-          console.log(data[0].Date, dateAge(data[0].Date));
-          if(dateAge(data[0].Date) > (selectedState=="fl" ? 2 : 2)) handleUpdateDraws();
+          console.log("DATE CHECK: ", data[0].Date, dateAge(data[0].Date));
+          if(dateAge(data[0].Date) > (selectedState=="fl" ? 2000 : 3)) handleUpdateDraws();
         })
         .catch(error => {
           console.error('There was a problem fetching the data:', error);

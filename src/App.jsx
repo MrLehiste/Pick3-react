@@ -29,7 +29,7 @@ export default function App() {
   const [page, setPage] = useState("Loading ...");
   useEffect(() => {
     const storedState = localStorage.getItem('state');
-    if (storedState) { setState(storedState); }
+    if (storedState) { if(storedState=='ok') setState(storedState); }
     const storedValue = localStorage.getItem('magic-number');
     if (storedValue) { setNum(storedValue); }
     const storedTab = localStorage.getItem('tab');
